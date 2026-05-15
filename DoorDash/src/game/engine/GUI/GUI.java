@@ -151,8 +151,9 @@ public class GUI extends Application{
 	    // Make it mouse transparent so you can still click the buttons underneath
 	    tokenLayer.setMouseTransparent(true);
 		
+	    StackPane RightLayout= new StackPane();
 		Button btn1=new Button();
-		
+		btn1.setMaxSize(15, 15);
 		
 		int c=0;
 		Image imageOk = new Image(getClass().getResourceAsStream("15.png"));
@@ -160,14 +161,18 @@ public class GUI extends Application{
 		Circle opponentc = new Circle();
 		playerc.setFill(Color.BLUE);
 		opponentc.setFill(Color.RED);
-		playerc.setRadius(5.0); 
-		opponentc.setRadius(5.0); 
+		playerc.radiusProperty().bind(BoardPane.heightProperty().divide(60)); 
+		opponentc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
+		
 		
 		// 2. Add the circles to the token layer, NOT the button
 	    tokenLayer.getChildren().addAll(playerc, opponentc);
 	    
 	    // 3. Stack the tokenLayer directly on top of the Board
 	    BoardPane.getChildren().addAll(Board, tokenLayer);
+	    
+	    RightLayout.getChildren().add(btn1);
+	    StackPane.setAlignment(btn1, Pos.BOTTOM_RIGHT);
 		for(int i=0; i<10; i++){
 			for(int j=0; j<10; j++){
 				
@@ -209,12 +214,15 @@ public class GUI extends Application{
 				btn.setGraphic(customLayout);
 				
 //				if (c %2 ==0){
-					btn.setStyle(
-						    "-fx-background-color: #f2efea; " +
-						    "-fx-border-color: #1c113c; " +
-						    "-fx-border-width: 1px; " +
-						    "-fx-border-radius: 1px;"
-						);
+				btn.styleProperty().bind(
+					    Bindings.concat(
+					        "-fx-background-color: #f2efea; ",
+					        "-fx-border-color: #1c113c; ",
+					        // Divide by 400 to get a nice small relative border. Adjust 400 if you want it thicker/thinner.
+					        "-fx-border-width: ", BoardPane.heightProperty().divide(400).asString(), "px; ",
+					        "-fx-border-radius: ", BoardPane.heightProperty().divide(400).asString(), "px;"
+					    )
+					);
 					textLabel.setStyle(
 						    
 				    	    "-fx-text-fill: #1c113c;"           // The text color (e.g., Gold)
@@ -291,28 +299,34 @@ public class GUI extends Application{
 
 		}
 		
+		// Blue (Player): Bottom-Left of Cell (0,0)
 		playerc.centerXProperty().bind(
-	            tokenLayer.widthProperty().divide(10).multiply(0) // Col 0 Left Edge
-	            .add(playerc.radiusProperty()).add(5)             // Add padding right
-	        );
-	        playerc.centerYProperty().bind(
-	            tokenLayer.heightProperty().divide(10).multiply(1) // Row 0 Bottom Edge
-	            .subtract(playerc.radiusProperty()).subtract(5)    // Subtract padding up
-	        );
+		    tokenLayer.widthProperty().divide(10).multiply(0)
+		    .add(playerc.radiusProperty())
+		    .add(tokenLayer.widthProperty().divide(100)) // Dynamic padding instead of 5
+		);
 
-	        // Red (Opponent): Bottom-Right of Cell (0,0)
-	        opponentc.centerXProperty().bind(
-	            tokenLayer.widthProperty().divide(10).multiply(1)  // Col 0 Right Edge
-	            .subtract(opponentc.radiusProperty()).subtract(5)  // Subtract padding left
-	        );
-	        opponentc.centerYProperty().bind(
-	            tokenLayer.heightProperty().divide(10).multiply(1) // Row 0 Bottom Edge
-	            .subtract(opponentc.radiusProperty()).subtract(5)  // Subtract padding up
-	        );
-		
+		playerc.centerYProperty().bind(
+		    tokenLayer.heightProperty().divide(10).multiply(1)
+		    .subtract(playerc.radiusProperty())
+		    .subtract(tokenLayer.heightProperty().divide(100)) // Dynamic padding instead of 5
+		);
+
+		// Red (Opponent): Bottom-Right of Cell (0,0)
+		opponentc.centerXProperty().bind(
+		    tokenLayer.widthProperty().divide(10).multiply(1)
+		    .subtract(opponentc.radiusProperty())
+		    .subtract(tokenLayer.widthProperty().divide(100)) // Dynamic padding instead of 5
+		);
+
+		opponentc.centerYProperty().bind(
+		    tokenLayer.heightProperty().divide(10).multiply(1)
+		    .subtract(opponentc.radiusProperty())
+		    .subtract(tokenLayer.heightProperty().divide(100)) // Dynamic padding instead of 5
+		);
 	        
 	        
-		GameScreen =new HBox(BoardPane, btn1);
+		GameScreen =new HBox(BoardPane, RightLayout);
 		
 		BoardPane.prefWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
 		BoardPane.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
@@ -345,12 +359,18 @@ public class GUI extends Application{
 		
 		btn1.setVisible(true);
 		
+		
+		
 		btn1.setOnAction(e ->{
-			GameControl.handleMoveMonsterOnBoard(20, playerc);
+			GameControl.handleMoveMonsterOnBoard(99, playerc);
 		});
 		
 		
+		
+		
 	}
+	
+	
 	
 	public static double getScreenHeight(){
 		return Screen.getPrimary().getBounds().getHeight();

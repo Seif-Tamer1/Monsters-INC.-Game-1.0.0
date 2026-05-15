@@ -38,14 +38,14 @@ public class GameControl {
 			transition.setDuration(Duration.seconds(2)); // Faster duration so it doesn't take forever
 			
 			// Positive stepsToMove = Right. Negative stepsToMove = Left.
-			transition.setByX(stepsToMove * 0.08 * GUI.getScreenHeight());   
+			transition.setByX(stepsToMove * 0.0825 * GUI.getScreenHeight());   
 			return transition;
 		}
 
 		// 2. UPDATED MAIN METHOD
 		public static void handleMoveMonsterOnBoard(int finalPosition, Circle cir){
 			int startPosition = game.getCurrent().getPosition();
-			int movedDistanceTillRowEndYaMohab = 10 - (startPosition % 10);
+			int movedDistanceTillRowEndYaMohab = 9 - (startPosition % 10);
 			
 			// Track the actual ROW, not the cell position
 			int currentRow = startPosition / 10; 
@@ -56,35 +56,52 @@ public class GameControl {
 			
 			SequentialTransition sequence = new SequentialTransition();
 			
-			if ((finalPosition - startPosition) > movedDistanceTillRowEndYaMohab){
-				
-				// --- STEP 1: Move to the end of the current row ---
-				if (currentRow % 2 == 0){
-					// Even Row: Move Right (Positive steps)
-					transition1 = handleMoveMonsterOnBoardHelperX(movedDistanceTillRowEndYaMohab, cir);
-				} else {
-					// Odd Row: Move Left (Negative steps)
-					transition1 = handleMoveMonsterOnBoardHelperX(-movedDistanceTillRowEndYaMohab, cir);
+			int index=startPosition;
+			
+			if ((finalPosition - index) > movedDistanceTillRowEndYaMohab){
+				while ((finalPosition - index) > movedDistanceTillRowEndYaMohab){
+					
+					// --- STEP 1: Move to the end of the current row ---
+					if (currentRow % 2 == 0){
+						// Even Row: Move Right (Positive steps)
+						transition1 = handleMoveMonsterOnBoardHelperX(movedDistanceTillRowEndYaMohab, cir);
+					} else {
+						// Odd Row: Move Left (Negative steps)
+						transition1 = handleMoveMonsterOnBoardHelperX(-movedDistanceTillRowEndYaMohab, cir);
+					}
+					
+					// --- STEP 2: Move down a row ---
+					transition2 = handleMoveMonsterOnBoardHelperY(cir);
+					
+					// --- STEP 3: Move across the new row ---
+					// We calculate how many steps are left over after finishing Step 1
+					
+					int remainingSteps = (finalPosition - startPosition) - movedDistanceTillRowEndYaMohab-1;
+					movedDistanceTillRowEndYaMohab = 9 - (index % 10);
+					index= index+movedDistanceTillRowEndYaMohab+1;
+					
+					currentRow = currentRow + 1;
+					
+					System.out.println(remainingSteps);
+					System.out.println(index);
+					System.out.println(movedDistanceTillRowEndYaMohab);
+					System.out.println(currentRow);
+					
+					sequence.getChildren().addAll(transition1, transition2);
+					
 				}
+				 // We moved up, so we are on the next row
 				
-				// --- STEP 2: Move down a row ---
-				transition2 = handleMoveMonsterOnBoardHelperY(cir);
 				
-				// --- STEP 3: Move across the new row ---
-				// We calculate how many steps are left over after finishing Step 1
-				int remainingSteps = (finalPosition - startPosition) - movedDistanceTillRowEndYaMohab;
-				int nextRow = currentRow + 1; // We moved up, so we are on the next row
 				
-				if (nextRow % 2 == 0){
+				if ((currentRow) % 2 == 0){
 					// New Row is Even: Move Right (Positive steps)
-					transition3 = handleMoveMonsterOnBoardHelperX(remainingSteps, cir);
+					transition3 = handleMoveMonsterOnBoardHelperX((finalPosition-index), cir);
 				} else {
 					// New Row is Odd: Move Left (Negative steps)
-					transition3 = handleMoveMonsterOnBoardHelperX(-remainingSteps, cir);
+					transition3 = handleMoveMonsterOnBoardHelperX(-(finalPosition-index), cir);
 				}
-				
-				sequence.getChildren().addAll(transition1, transition2, transition3);
-				
+				sequence.getChildren().add(transition3);
 			} else {
 				// --- DOES NOT CHANGE ROWS ---
 				int stepsToMove = finalPosition - startPosition;
@@ -105,7 +122,7 @@ public class GameControl {
 		TranslateTransition transition = new TranslateTransition();
 	    transition.setNode(cir);
 	    transition.setDuration(Duration.seconds(2)); // Takes 2 seconds to complete one way
-	    transition.setByY(0.08 * GUI.getScreenHeight());   
+	    transition.setByY(0.0825 * GUI.getScreenHeight());   
 	    return transition;
 	}
 }
