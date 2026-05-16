@@ -19,6 +19,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -42,8 +43,18 @@ public class GUI extends Application{
 	private static HBox GameScreen;
 	private VBox GameOverScreen;
 	
+	private static Label Role_Question_Label;
+	private Button SWITCH_Button;
+	private Button PLAY_Button;
+	private Button INSTRUCTIONS_Button;
 	
 	
+	private static Label playerMonsterEnergyLabel;
+	private static Label playerStatus;
+	private static Label opponentMonsterEnergyLabel;
+	private static Label opponentStatus;
+	private static Label playerMonsterFrozenLabel;
+	private static Label opponentMonsterFrozenLabel;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -64,24 +75,23 @@ public class GUI extends Application{
 	
 	public void buildMainScreen(Stage primaryStage){
 		//Elements of mainScreen
-		Label Role_Question_Label= new Label("Do you want to be a SCARER or a LAUGHER?");
+		Role_Question_Label= new Label("YOU ARE A SCARER!");
 		
-		Button SCARER_Button= new Button("Switch");
-		SCARER_Button.setOnAction(e -> {
+		SWITCH_Button= new Button("Switch");
+		SWITCH_Button.setOnAction(e -> {
 			GameControl.handleChoosenRole();
-			
 		});
 		
-		Button PLAY_Button= new Button("PLAY!");
+		PLAY_Button= new Button("PLAY!");
 		PLAY_Button.setOnAction(e->{
 			buildGameScreen();
 			mainScene.setRoot(GameScreen);
 		});
 		
-		Button INSTRUCTIONS_Button= new Button("RULES");
+		INSTRUCTIONS_Button= new Button("RULES");
 		
 		
-		MainScreen = new VBox(Role_Question_Label,SCARER_Button,PLAY_Button,INSTRUCTIONS_Button);
+		MainScreen = new VBox(Role_Question_Label,SWITCH_Button,PLAY_Button,INSTRUCTIONS_Button);
 		
 	
 		
@@ -95,7 +105,7 @@ public class GUI extends Application{
 			);
 		
 		// Bind SCARER button text size
-		SCARER_Button.styleProperty().bind(
+		SWITCH_Button.styleProperty().bind(
 		    Bindings.concat(
 		        "-fx-font-size: ", 
 		        MainScreen.widthProperty().divide(30.0).asString(), 
@@ -126,8 +136,8 @@ public class GUI extends Application{
 		//Elements Size of mainScreen
 		Role_Question_Label.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
 		
-		SCARER_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
-		SCARER_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
+		SWITCH_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
+		SWITCH_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
 		
 		PLAY_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
 		PLAY_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
@@ -384,14 +394,69 @@ public class GUI extends Application{
 		opponentTurnLabel.setVisible(false);
 		
 		
+		//ButtonEvents
+		yesButton.setOnAction(e ->{
+			GameControl.handleUsePowerUpYES();
+		});
+		
 	}
 	
 	public static void updateLabel(Label label, String newText){
 		label.setText(newText);
 	}
 	
-	public static double getScreenHeight(){
-		return Screen.getPrimary().getBounds().getHeight();
-	}
+	
 
+	  public static void displayAlert(String title, String message) {
+	        Stage alertStage = new Stage();
+	        alertStage.setTitle(title);
+
+	        Label label = new Label(message);
+	        Button closeButton = new Button("Continue Playing");
+	        closeButton.setOnAction(event -> alertStage.close());
+
+	        BorderPane pane = new BorderPane();
+	        pane.setTop(label);
+	        BorderPane.setAlignment(label, Pos.TOP_CENTER);
+	        pane.setCenter(closeButton);
+
+	        Scene scene = new Scene(pane, 400, 100);
+	        alertStage.setScene(scene);
+	        alertStage.show();
+	    }
+		public static double getScreenHeight(){
+				return Screen.getPrimary().getBounds().getHeight();
+		}
+	
+		public static Label getRole_Question_Label() {
+			return Role_Question_Label;
+		}
+
+		public static Label getPlayerMonsterEnergyLabel() {
+			return playerMonsterEnergyLabel;
+		}
+
+		public static Label getPlayerStatus() {
+			return playerStatus;
+		}
+
+		public static Label getOpponentMonsterEnergyLabel() {
+			return opponentMonsterEnergyLabel;
+		}
+
+		public static Label getOpponentStatus() {
+			return opponentStatus;
+		}
+
+		public static Label getPlayerMonsterFrozenLabel() {
+			return playerMonsterFrozenLabel;
+		}
+
+		public static Label getOpponentMonsterFrozenLabel() {
+			return opponentMonsterFrozenLabel;
+		}
+		
+		
+		
+	
 }
