@@ -49,12 +49,9 @@ public class GUI extends Application {
 	private Button PLAY_Button;
 	private Button INSTRUCTIONS_Button;
 
-	private static Label playerMonsterEnergyLabel;
-	private static Label playerStatus;
-	private static Label opponentMonsterEnergyLabel;
-	private static Label opponentStatus;
-	private static Label playerMonsterFrozenLabel;
-	private static Label opponentMonsterFrozenLabel;
+	
+	
+	
 
 	private static Label playerTurnLabel;
 	private static Label youLabel;
@@ -67,6 +64,9 @@ public class GUI extends Application {
 	private static Label playerMonsterPositionLabel;
 	private static Label playerMonsterShieldedLabel;
 	private static Label playerMonsterConfusedLabel;
+	private static Label playerMonsterEnergyLabel;
+	private static Label playerStatus;
+	private static Label playerMonsterFrozenLabel;
 
 	private static Label opponentTurnLabel;
 	private static Label opponentLabel;
@@ -79,7 +79,20 @@ public class GUI extends Application {
 	private static Label opponentMonsterPositionLabel;
 	private static Label opponentMonsterShieldedLabel;
 	private static Label opponentMonsterConfusedLabel;
-
+	private static Label opponentMonsterEnergyLabel;
+	private static Label opponentStatus;
+	private static Label opponentMonsterFrozenLabel;
+	
+	
+	
+	private static Label usePowerup;
+	private static Button yesButton;
+	private static Button noButton;
+	private static HBox yesNoPowerup;
+	
+	private static Label rollDiceLabel;
+	private static Button rollDiceButton;
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
@@ -182,11 +195,18 @@ public class GUI extends Application {
 		VBox VSLayout = new VBox();
 		VBox opponentLayout = new VBox();
 
+		
+		//Powerup
 		Label usePowerup = new Label("USE POWERUP?");
 		Button yesButton = new Button("YES!");
 		Button noButton = new Button("NO!");
 		HBox yesNoPowerup = new HBox(yesButton, noButton);
-		VBox DownLayout = new VBox(usePowerup, yesNoPowerup);
+		
+		//RollDice
+		Button rollDiceButton= new Button("Roll the Dice!");
+		Label rollDiceLabel=new Label("You rolled: ");
+		
+		VBox DownLayout = new VBox(usePowerup, yesNoPowerup, rollDiceButton, rollDiceLabel);
 		GameScreen = new HBox(BoardPane, RightLayoutFrame);
 
 		// PlayerLayoutElements
@@ -475,11 +495,18 @@ public class GUI extends Application {
 				GameScreen.widthProperty().divide(125));
 
 		opponentTurnLabel.setVisible(false);
+		rollDiceLabel.setVisible(false);
+		rollDiceButton.setVisible(false);
 
 		// ButtonEvents
 		yesButton.setOnAction(e -> {
 			GameControl.handleUsePowerUpYES();
 		});
+		
+		noButton.setOnAction(e -> {
+			GameControl.handleUsePowerUpNO();
+		});
+		
 
 	}
 
@@ -505,6 +532,21 @@ public class GUI extends Application {
 		alertStage.show();
 	}
 
+	public static void hidePowerup(){
+		usePowerup.setVisible(false);
+		yesButton.setVisible(false);
+		noButton.setVisible(false);
+		yesNoPowerup.setVisible(false);
+	}
+	
+	public static void showRollRice(){
+		rollDiceLabel.setVisible(false);
+		rollDiceButton.setVisible(false);
+	}
+	
+	
+	
+	//Getters
 	public static double getScreenHeight() {
 		return Screen.getPrimary().getBounds().getHeight();
 	}

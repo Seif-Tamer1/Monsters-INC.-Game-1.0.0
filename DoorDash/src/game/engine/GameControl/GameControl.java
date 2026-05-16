@@ -201,9 +201,16 @@ public class GameControl {
 		} catch (OutOfEnergyException e) {
 			GUI.displayAlert("NOT ENOUGH ENERGY","You dont have 500+ energy");
 		} finally {
-
+			GUI.hidePowerup();
+			GUI.showRollRice();
 		}
 	}
+	
+	public static void handleUsePowerUpNO() {
+		GUI.hidePowerup();
+		GUI.showRollRice();
+	}
+	
 
 	public static Game getGame() {
 		return game;
