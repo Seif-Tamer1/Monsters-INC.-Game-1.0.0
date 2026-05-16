@@ -7,9 +7,12 @@ import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import game.engine.Board;
 import game.engine.Game;
 import game.engine.Role;
 import game.engine.GUI.GUI;
+import game.engine.cells.CardCell;
+import game.engine.exceptions.InvalidMoveException;
 import game.engine.exceptions.OutOfEnergyException;
 import game.engine.monsters.Dasher;
 import game.engine.monsters.Dynamo;
@@ -132,78 +135,74 @@ public class GameControl {
 	}
 	
 	public static void handleMoveMonsterOnBoardBackward(int startPosition, int finalPosition, Circle cir) {
-		
-		int movedDistanceTillRowEndYaMohab =(startPosition % 10);
+	    
+	    int movedDistanceTillRowEndYaMohab = (startPosition % 10);
 
-		// Track the actual ROW, not the cell position
-		int currentRow = startPosition / 10;
+	    // Track the actual ROW, not the cell position
+	    int currentRow = startPosition / 10;
 
-		TranslateTransition transition1;
-		TranslateTransition transition2;
-		TranslateTransition transition3;
+	    TranslateTransition transition1;
+	    TranslateTransition transition2;
+	    TranslateTransition transition3;
 
-		SequentialTransition sequence = new SequentialTransition();
+	    SequentialTransition sequence = new SequentialTransition();
 
-		int index = startPosition;
+	    int index = startPosition;
 
-		if ((index-finalPosition) > movedDistanceTillRowEndYaMohab) {
-			while ((index-finalPosition) > movedDistanceTillRowEndYaMohab) {
+	    if ((index - finalPosition) > movedDistanceTillRowEndYaMohab) {
+	        while ((index - finalPosition) > movedDistanceTillRowEndYaMohab) {
 
-				// --- STEP 1: Move to the end of the current row ---
-				if (currentRow % 2 == 0) {
-					// Even Row: Move Right (Positive steps)
-					transition1 = handleMoveMonsterOnBoardHelperX(
-							-movedDistanceTillRowEndYaMohab, cir);
-				} else {
-					// Odd Row: Move Left (Negative steps)
-					transition1 = handleMoveMonsterOnBoardHelperX(
-							movedDistanceTillRowEndYaMohab, cir);
-				}
+	            // --- STEP 1: Move to the start of the current row ---
+	            if (currentRow % 2 == 0) {
+	                // Even Row (0, 2, 4): Backwards means moving Left (Negative steps)
+	                transition1 = handleMoveMonsterOnBoardHelperX(
+	                        -movedDistanceTillRowEndYaMohab, cir);
+	            } else {
+	                // Odd Row (1, 3, 5): Backwards means moving Right (Positive steps)
+	                transition1 = handleMoveMonsterOnBoardHelperX(
+	                        movedDistanceTillRowEndYaMohab, cir);
+	            }
 
-				// --- STEP 2: Move down a row ---
-				transition2 = handleMoveMonsterOnBoardHelperYUP(cir);
+	            // --- STEP 2: Move UP a row ---
+	            transition2 = handleMoveMonsterOnBoardHelperYUP(cir);
 
-				// --- STEP 3: Move across the new row ---
-				// We calculate how many steps are left over after finishing
-				// Step 1
+	            // --- STEP 3: Update indices for the next iteration ---
+	            // CRITICAL FIX: Update `index` FIRST, then calculate the new `movedDistance`
+	            index = index - movedDistanceTillRowEndYaMohab - 1;
+	            movedDistanceTillRowEndYaMohab = (index % 10); // This will correctly evaluate to 9
+	            currentRow = currentRow - 1;
 
-				int remainingSteps = (startPosition - finalPosition)
-						- movedDistanceTillRowEndYaMohab - 1;
-				
-				movedDistanceTillRowEndYaMohab = (index % 10);
-				index = index - movedDistanceTillRowEndYaMohab - 1;
+	            sequence.getChildren().addAll(transition1, transition2);
+	        }
 
-				currentRow = currentRow - 1;
+	        // We moved up, so we are on the final row
+	        if ((currentRow) % 2 == 0) {
+	            // New Row is Even: Backwards means moving Left
+	            // (finalPosition - index) is negative, which handles the Left direction automatically
+	            transition3 = handleMoveMonsterOnBoardHelperX(
+	                    (finalPosition - index), cir);
+	        } else {
+	            // New Row is Odd: Backwards means moving Right
+	            // -(finalPosition - index) makes it positive, moving it Right
+	            transition3 = handleMoveMonsterOnBoardHelperX(
+	                    -(finalPosition - index), cir);
+	        }
+	        sequence.getChildren().add(transition3);
+	        
+	    } else {
+	        // --- DOES NOT CHANGE ROWS ---
+	        int stepsToMove = finalPosition - startPosition; // This results in a negative number
 
-				sequence.getChildren().addAll(transition1, transition2);
+	        if (currentRow % 2 == 0) {
+	            transition1 = handleMoveMonsterOnBoardHelperX(stepsToMove, cir); // Moves Left
+	        } else {
+	            transition1 = handleMoveMonsterOnBoardHelperX(-stepsToMove, cir); // Moves Right
+	        }
 
-			}
-			// We moved up, so we are on the next row
+	        sequence.getChildren().add(transition1);
+	    }
 
-			if ((currentRow) % 2 == 0) {
-				// New Row is Even: Move Right (Positive steps)
-				transition3 = handleMoveMonsterOnBoardHelperX(
-						(finalPosition - index), cir);
-			} else {
-				// New Row is Odd: Move Left (Negative steps)
-				transition3 = handleMoveMonsterOnBoardHelperX(
-						-(finalPosition - index), cir);
-			}
-			sequence.getChildren().add(transition3);
-		} else {
-			// --- DOES NOT CHANGE ROWS ---
-			int stepsToMove = finalPosition - startPosition;
-
-			if (currentRow % 2 == 0) {
-				transition1 = handleMoveMonsterOnBoardHelperX(stepsToMove, cir);
-			} else {
-				transition1 = handleMoveMonsterOnBoardHelperX(-stepsToMove, cir);
-			}
-
-			sequence.getChildren().add(transition1);
-		}
-
-		sequence.play();
+	    sequence.play();
 	}
 
 	public static TranslateTransition handleMoveMonsterOnBoardHelperYDOWN(Circle cir) {
@@ -295,6 +294,81 @@ public class GameControl {
 		GUI.showRollRice();
 	}
 	
+	
+	public static void handleMoveMonsterOnBoard(int startPosition, int finalPosition, Circle cir) {
+		if (finalPosition>startPosition)
+			handleMoveMonsterOnBoardForward(startPosition, finalPosition, cir);
+		else
+			handleMoveMonsterOnBoardBackward(startPosition, finalPosition, cir);
+	}
+	
+	public static void handleRollDice(){
+		try {
+			int startPos=game.getCurrent().getPosition();
+			game.playTurn();
+			GUI.updateLabel(GUI.getRollDiceLabel(), "You rolled: "+game.getRoll());
+			if (game.getCurrent().equals(game.getPlayer())){
+				handleMoveMonsterOnBoard(startPos, Board.getPreEffectedPosition(), GUI.getPlayerc());
+			}else{
+				handleMoveMonsterOnBoard(startPos, Board.getPreEffectedPosition(), GUI.getOpponentc());
+			}
+			if (Board.getPreEffectedCell() instanceof CardCell){
+				if (Board.getPreEffectedCell().getName().equals("Position Swap")){
+					if (Board.getPreEffectedPosition() != game.getCurrent().getPosition()){
+						GUI.decrementCardCounter();
+						GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n Your Positions are swapped!\n Cards remaining are: "+GUI.getCardCounter());
+						GUI.getAlertStage().setOnHidden(e ->{
+							int currentPlayerPosition=game.getPlayer().getPosition();
+							int currentOpponentPosition=game.getOpponent().getPosition(); 
+							handleMoveMonsterOnBoard(currentPlayerPosition,currentOpponentPosition, GUI.getPlayerc());
+							handleMoveMonsterOnBoard(currentOpponentPosition,currentPlayerPosition, GUI.getOpponentc());
+							
+							GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+							GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+							GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+						});
+							
+					}else{
+						GUI.decrementCardCounter();
+						GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n No swap occured!\n Cards remaining are: "+GUI.getCardCounter());
+						GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+					}
+				} else if(Board.getPreEffectedCell().getName().equals("Super Shield")){
+					
+						GUI.decrementCardCounter();
+						GUI.displayAlert("Super Shield!", "Card drawn: Super Shield\n You are shielded!\n Cards remaining are: "+GUI.getCardCounter());
+						GUI.getAlertStage().setOnHidden(e ->{
+							
+							if (game.getCurrent().equals(game.getPlayer()))
+								GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), "Shielded");
+							else
+								GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), "Shielded");
+							GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+						});
+	
+				} else if(Board.getPreEffectedCell().getName().equals("Small Snatcher")){
+					
+					GUI.decrementCardCounter();
+					GUI.displayAlert( "Small Snatcher!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Small Snatcher\n "+game.getPlayer().getName()+" snatched 50 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Small Snatcher\n "+game.getOpponent().getName()+" snatched 50 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+					GUI.getAlertStage().setOnHidden(e ->{
+						
+						
+							GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
+							GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
+							
+							GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), game.getPlayer().isShielded() ? "Shielded" : "Not Shielded");
+							GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), game.getOpponent().isShielded() ? "Shielded" : "Not Shielded");
+						GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+					});
+
+			}
+			}
+		} catch (InvalidMoveException e) {
+			
+			
+		}
+		
+	}
 
 	public static Game getGame() {
 		return game;

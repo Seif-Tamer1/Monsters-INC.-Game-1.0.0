@@ -13,6 +13,8 @@ public class Board {
 	private static ArrayList<Monster> stationedMonsters; 
 	private static ArrayList<Card> originalCards;
 	public static ArrayList<Card> cards;
+	private static int preEffectedPosition;
+	private static Cell preEffectedCell;
 	
 	public Board(ArrayList<Card> readCards) {
 		this.boardCells = new Cell[Constants.BOARD_ROWS][Constants.BOARD_COLS];
@@ -129,9 +131,11 @@ public class Board {
 	    int oldPosition = currentMonster.getPosition();
 	    
 	    currentMonster.move(roll);
-	    
+	    preEffectedPosition= currentMonster.getPosition();
+	    preEffectedCell= getCell(preEffectedPosition);
 
 	    getCell(currentMonster.getPosition()).onLand(currentMonster, opponentMonster);
+	    
 
 	    if (currentMonster.getPosition() == opponentMonster.getPosition()) {
 	        currentMonster.setPosition(oldPosition);
@@ -155,4 +159,15 @@ public class Board {
 		getCell(player.getPosition()).setMonster(player);
 		getCell(opponent.getPosition()).setMonster(opponent);
 	}
+
+	public static int getPreEffectedPosition() {
+		return preEffectedPosition;
+	}
+
+	public static Cell getPreEffectedCell() {
+		return preEffectedCell;
+	}
+	
+	
+	
 }

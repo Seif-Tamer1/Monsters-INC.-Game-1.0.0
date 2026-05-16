@@ -36,6 +36,9 @@ import javafx.util.Duration;
 
 public class GUI extends Application {
 
+	
+	static Stage alertStage;
+	
 	private Scene mainScene;
 
 	private VBox StartScreen;
@@ -93,6 +96,11 @@ public class GUI extends Application {
 	private static Label rollDiceLabel;
 	private static Button rollDiceButton;
 	
+	private static Circle playerc;
+	private static Circle opponentc;
+	
+	private static int cardCounter=25;
+	private static Label cardCounterLabel;
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
@@ -192,12 +200,10 @@ public class GUI extends Application {
 		VBox RightLayout = new VBox();
 		HBox upperlayout = new HBox();
 		VBox playerLayout = new VBox();
-		
+		VBox VSLayout = new VBox();
 		VBox opponentLayout = new VBox();
 
-		Button forwardButton= new Button("Forward");
-		Button backwardButton= new Button("Backward");
-		VBox VSLayout = new VBox(forwardButton,backwardButton);
+		
 		
 		//Powerup
 		usePowerup = new Label("USE POWERUP?");
@@ -209,7 +215,14 @@ public class GUI extends Application {
 		rollDiceButton= new Button("Roll the Dice!");
 		rollDiceLabel=new Label("You rolled: ");
 		
-		VBox DownLayout = new VBox(usePowerup, yesNoPowerup, rollDiceButton, rollDiceLabel);
+		//Cards Deck
+		cardCounterLabel=new Label(cardCounter+"");
+		StackPane cardsLayout=new StackPane(cardCounterLabel);
+		cardsLayout.setAlignment(Pos.CENTER);
+		
+		
+		VBox actionCenter = new VBox(usePowerup, yesNoPowerup, rollDiceButton, rollDiceLabel);
+		HBox DownLayout= new HBox(cardsLayout, actionCenter);
 		GameScreen = new HBox(BoardPane, RightLayoutFrame);
 
 		// PlayerLayoutElements
@@ -284,8 +297,8 @@ public class GUI extends Application {
 
 		// Board drawing
 		int c = 0;
-		Circle playerc = new Circle();
-		Circle opponentc = new Circle();
+		playerc = new Circle();
+		opponentc = new Circle();
 		playerc.setFill(Color.BLUE);
 		opponentc.setFill(Color.RED);
 		playerc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
@@ -405,6 +418,7 @@ public class GUI extends Application {
 		VSLayout.setStyle("-fx-background-color: blue;");
 		opponentLayout.setStyle("-fx-background-color: green;");
 		DownLayout.setStyle("-fx-background-color: black;");
+		cardsLayout.setStyle("-fx-background-color: yellow;");
 
 		// Layout children
 		RightLayoutFrame.getChildren().add(RightLayout);
@@ -435,6 +449,7 @@ public class GUI extends Application {
 		playerLayout.setAlignment(Pos.CENTER);
 		DownLayout.setAlignment(Pos.CENTER);
 		yesNoPowerup.setAlignment(Pos.CENTER);
+		actionCenter.setAlignment(Pos.CENTER);
 		RightLayoutFrame.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
 		// Board size
@@ -472,6 +487,18 @@ public class GUI extends Application {
 		DownLayout.prefWidthProperty().bind(
 				GameScreen.widthProperty().subtract(
 						GameScreen.heightProperty().multiply(0.95)));
+		
+		cardsLayout.prefHeightProperty().bind(
+				GameScreen.heightProperty().multiply(0.2));
+		cardsLayout.prefWidthProperty().bind(
+				GameScreen.widthProperty().subtract(
+						GameScreen.heightProperty().multiply(0.88)));
+		
+		actionCenter.prefHeightProperty().bind(
+				GameScreen.heightProperty().multiply(0.2));
+		actionCenter.prefWidthProperty().bind(
+				GameScreen.widthProperty().subtract(
+						GameScreen.heightProperty().multiply(0.12)));
 
 		playerLayout.prefHeightProperty().bind(
 				GameScreen.heightProperty().multiply(0.9));
@@ -510,12 +537,11 @@ public class GUI extends Application {
 			GameControl.handleUsePowerUpNO();
 		});
 		
-		forwardButton.setOnAction(e ->{
-			GameControl.handleMoveMonsterOnBoardForward(0,48, playerc);
+		rollDiceButton.setOnAction( e ->{
+			GameControl.handleRollDice();
 		});
-		backwardButton.setOnAction(e ->{
-			GameControl.handleMoveMonsterOnBoardBackward(48,5, playerc);
-		});
+		
+		
 
 	}
 
@@ -524,7 +550,7 @@ public class GUI extends Application {
 	}
 
 	public static void displayAlert(String title, String message) {
-		Stage alertStage = new Stage();
+		alertStage = new Stage();
 		alertStage.setTitle(title);
 
 		Label label = new Label(message);
@@ -553,6 +579,12 @@ public class GUI extends Application {
 		rollDiceButton.setVisible(true);
 	}
 	
+	public static void decrementCardCounter(){
+		if (cardCounter!=1)
+			cardCounter--;
+		else
+			cardCounter=25;
+	}
 	
 	
 	//Getters
@@ -676,6 +708,32 @@ public class GUI extends Application {
 		return opponentMonsterConfusedLabel;
 	}
 
+	public static Label getRollDiceLabel() {
+		return rollDiceLabel;
+	}
+
+	public static Circle getPlayerc() {
+		return playerc;
+	}
+
+	public static Circle getOpponentc() {
+		return opponentc;
+	}
+
+	public static Stage getAlertStage() {
+		return alertStage;
+	}
+
+	public static int getCardCounter() {
+		return cardCounter;
+	}
+
+	public static Label getCardCounterLabel() {
+		return cardCounterLabel;
+	}
+
+	
+	
 }
 
 
