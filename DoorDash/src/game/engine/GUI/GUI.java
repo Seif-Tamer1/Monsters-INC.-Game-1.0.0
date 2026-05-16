@@ -201,7 +201,7 @@ public class GUI extends Application{
 		Label playerStatus= new Label(GameControl.getGame().getPlayer() instanceof Dasher ? "Momentum Rush for 0 turns" :
 			GameControl.getGame().getPlayer() instanceof MultiTasker ? "Focus Mode for 0 turns":
 				GameControl.getGame().getPlayer() instanceof Dynamo ? "Energy Freeze":
-					"Chain Attack");
+					"No Chain Attack");
 		
 		
 		//OpponentLayoutElements
@@ -224,7 +224,7 @@ public class GUI extends Application{
 		Label opponentStatus= new Label(GameControl.getGame().getOpponent() instanceof Dasher ? "Momentum Rush for 0 turns" :
 			GameControl.getGame().getOpponent() instanceof MultiTasker ? "Focus Mode for 0 turns":
 				GameControl.getGame().getOpponent() instanceof Dynamo ? "Energy Freeze":
-					"Chain Attack");
+					"No Chain Attack");
 		
 		//Board drawing
 		int c=0;
