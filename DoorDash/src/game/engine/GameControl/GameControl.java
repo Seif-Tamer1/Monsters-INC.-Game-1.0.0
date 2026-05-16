@@ -57,8 +57,8 @@ public class GameControl {
 	}
 
 	// 2. UPDATED MAIN METHOD
-	public static void handleMoveMonsterOnBoard(int finalPosition, Circle cir) {
-		int startPosition = game.getCurrent().getPosition();
+	public static void handleMoveMonsterOnBoardForward(int startPosition ,int finalPosition, Circle cir) {
+		
 		int movedDistanceTillRowEndYaMohab = 9 - (startPosition % 10);
 
 		// Track the actual ROW, not the cell position
@@ -87,7 +87,7 @@ public class GameControl {
 				}
 
 				// --- STEP 2: Move down a row ---
-				transition2 = handleMoveMonsterOnBoardHelperY(cir);
+				transition2 = handleMoveMonsterOnBoardHelperYDOWN(cir);
 
 				// --- STEP 3: Move across the new row ---
 				// We calculate how many steps are left over after finishing
@@ -130,13 +130,97 @@ public class GameControl {
 
 		sequence.play();
 	}
+	
+	public static void handleMoveMonsterOnBoardBackward(int startPosition, int finalPosition, Circle cir) {
+		
+		int movedDistanceTillRowEndYaMohab =(startPosition % 10);
 
-	public static TranslateTransition handleMoveMonsterOnBoardHelperY(Circle cir) {
+		// Track the actual ROW, not the cell position
+		int currentRow = startPosition / 10;
+
+		TranslateTransition transition1;
+		TranslateTransition transition2;
+		TranslateTransition transition3;
+
+		SequentialTransition sequence = new SequentialTransition();
+
+		int index = startPosition;
+
+		if ((index-finalPosition) > movedDistanceTillRowEndYaMohab) {
+			while ((index-finalPosition) > movedDistanceTillRowEndYaMohab) {
+
+				// --- STEP 1: Move to the end of the current row ---
+				if (currentRow % 2 == 0) {
+					// Even Row: Move Right (Positive steps)
+					transition1 = handleMoveMonsterOnBoardHelperX(
+							-movedDistanceTillRowEndYaMohab, cir);
+				} else {
+					// Odd Row: Move Left (Negative steps)
+					transition1 = handleMoveMonsterOnBoardHelperX(
+							movedDistanceTillRowEndYaMohab, cir);
+				}
+
+				// --- STEP 2: Move down a row ---
+				transition2 = handleMoveMonsterOnBoardHelperYUP(cir);
+
+				// --- STEP 3: Move across the new row ---
+				// We calculate how many steps are left over after finishing
+				// Step 1
+
+				int remainingSteps = (startPosition - finalPosition)
+						- movedDistanceTillRowEndYaMohab - 1;
+				
+				movedDistanceTillRowEndYaMohab = (index % 10);
+				index = index - movedDistanceTillRowEndYaMohab - 1;
+
+				currentRow = currentRow - 1;
+
+				sequence.getChildren().addAll(transition1, transition2);
+
+			}
+			// We moved up, so we are on the next row
+
+			if ((currentRow) % 2 == 0) {
+				// New Row is Even: Move Right (Positive steps)
+				transition3 = handleMoveMonsterOnBoardHelperX(
+						(finalPosition - index), cir);
+			} else {
+				// New Row is Odd: Move Left (Negative steps)
+				transition3 = handleMoveMonsterOnBoardHelperX(
+						-(finalPosition - index), cir);
+			}
+			sequence.getChildren().add(transition3);
+		} else {
+			// --- DOES NOT CHANGE ROWS ---
+			int stepsToMove = finalPosition - startPosition;
+
+			if (currentRow % 2 == 0) {
+				transition1 = handleMoveMonsterOnBoardHelperX(stepsToMove, cir);
+			} else {
+				transition1 = handleMoveMonsterOnBoardHelperX(-stepsToMove, cir);
+			}
+
+			sequence.getChildren().add(transition1);
+		}
+
+		sequence.play();
+	}
+
+	public static TranslateTransition handleMoveMonsterOnBoardHelperYDOWN(Circle cir) {
 		TranslateTransition transition = new TranslateTransition();
 		transition.setNode(cir);
 		transition.setDuration(Duration.seconds(2)); // Takes 2 seconds to
 														// complete one way
 		transition.setByY(0.0825 * GUI.getScreenHeight());
+		return transition;
+	}
+	
+	public static TranslateTransition handleMoveMonsterOnBoardHelperYUP(Circle cir) {
+		TranslateTransition transition = new TranslateTransition();
+		transition.setNode(cir);
+		transition.setDuration(Duration.seconds(2)); // Takes 2 seconds to
+														// complete one way
+		transition.setByY(-0.0825 * GUI.getScreenHeight());
 		return transition;
 	}
 

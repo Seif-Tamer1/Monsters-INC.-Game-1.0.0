@@ -129,6 +129,7 @@ public class Board {
 	    int oldPosition = currentMonster.getPosition();
 	    
 	    currentMonster.move(roll);
+	    
 
 	    getCell(currentMonster.getPosition()).onLand(currentMonster, opponentMonster);
 

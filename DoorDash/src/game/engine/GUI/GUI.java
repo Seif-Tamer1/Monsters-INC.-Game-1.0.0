@@ -192,19 +192,22 @@ public class GUI extends Application {
 		VBox RightLayout = new VBox();
 		HBox upperlayout = new HBox();
 		VBox playerLayout = new VBox();
-		VBox VSLayout = new VBox();
+		
 		VBox opponentLayout = new VBox();
 
+		Button forwardButton= new Button("Forward");
+		Button backwardButton= new Button("Backward");
+		VBox VSLayout = new VBox(forwardButton,backwardButton);
 		
 		//Powerup
-		Label usePowerup = new Label("USE POWERUP?");
-		Button yesButton = new Button("YES!");
-		Button noButton = new Button("NO!");
-		HBox yesNoPowerup = new HBox(yesButton, noButton);
+		usePowerup = new Label("USE POWERUP?");
+		yesButton = new Button("YES!");
+		noButton = new Button("NO!");
+		yesNoPowerup = new HBox(yesButton, noButton);
 		
 		//RollDice
-		Button rollDiceButton= new Button("Roll the Dice!");
-		Label rollDiceLabel=new Label("You rolled: ");
+		rollDiceButton= new Button("Roll the Dice!");
+		rollDiceLabel=new Label("You rolled: ");
 		
 		VBox DownLayout = new VBox(usePowerup, yesNoPowerup, rollDiceButton, rollDiceLabel);
 		GameScreen = new HBox(BoardPane, RightLayoutFrame);
@@ -507,6 +510,12 @@ public class GUI extends Application {
 			GameControl.handleUsePowerUpNO();
 		});
 		
+		forwardButton.setOnAction(e ->{
+			GameControl.handleMoveMonsterOnBoardForward(0,48, playerc);
+		});
+		backwardButton.setOnAction(e ->{
+			GameControl.handleMoveMonsterOnBoardBackward(48,5, playerc);
+		});
 
 	}
 
@@ -540,8 +549,8 @@ public class GUI extends Application {
 	}
 	
 	public static void showRollRice(){
-		rollDiceLabel.setVisible(false);
-		rollDiceButton.setVisible(false);
+		rollDiceLabel.setVisible(true);
+		rollDiceButton.setVisible(true);
 	}
 	
 	
