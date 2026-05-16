@@ -200,7 +200,7 @@ public class GUI extends Application{
 		Label playerMonsterFrozenLabel= new Label(GameControl.getGame().getPlayer().isFrozen() ? "Frozen" : "Not Frozen");
 		Label playerStatus= new Label(GameControl.getGame().getPlayer() instanceof Dasher ? "Momentum Rush for 0 turns" :
 			GameControl.getGame().getPlayer() instanceof MultiTasker ? "Focus Mode for 0 turns":
-				GameControl.getGame().getPlayer() instanceof Dynamo ? "Energy Freeze":
+				GameControl.getGame().getPlayer() instanceof Dynamo ? "No Energy Freeze":
 					"No Chain Attack");
 		
 		
@@ -223,7 +223,7 @@ public class GUI extends Application{
 		Label opponentMonsterFrozenLabel= new Label(GameControl.getGame().getOpponent().isFrozen() ? "Frozen" : "Not Frozen");
 		Label opponentStatus= new Label(GameControl.getGame().getOpponent() instanceof Dasher ? "Momentum Rush for 0 turns" :
 			GameControl.getGame().getOpponent() instanceof MultiTasker ? "Focus Mode for 0 turns":
-				GameControl.getGame().getOpponent() instanceof Dynamo ? "Energy Freeze":
+				GameControl.getGame().getOpponent() instanceof Dynamo ? "No Energy Freeze":
 					"No Chain Attack");
 		
 		//Board drawing
