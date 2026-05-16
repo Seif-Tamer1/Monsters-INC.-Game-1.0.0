@@ -23,9 +23,14 @@ public class GameControl {
 		System.out.println(choosen_role.toString());
 	}
 	
-	public static void startGame() throws IOException{
+	public static void handlePlayButton(){
+		startGame();
+	}
+	
+	public static void startGame(){
 		try{
 			game=new Game(choosen_role);
+			System.out.println("kl");
 		}catch (IOException e){
 			System.out.println(e);
 		}
@@ -82,10 +87,7 @@ public class GameControl {
 					
 					currentRow = currentRow + 1;
 					
-					System.out.println(remainingSteps);
-					System.out.println(index);
-					System.out.println(movedDistanceTillRowEndYaMohab);
-					System.out.println(currentRow);
+					
 					
 					sequence.getChildren().addAll(transition1, transition2);
 					
@@ -125,4 +127,10 @@ public class GameControl {
 	    transition.setByY(0.0825 * GUI.getScreenHeight());   
 	    return transition;
 	}
+
+	public static Game getGame() {
+		return game;
+	}
+	
+	
 }
