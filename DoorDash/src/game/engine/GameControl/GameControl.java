@@ -361,7 +361,87 @@ public class GameControl {
 						GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 					});
 
+			}else if(Board.getPreEffectedCell().getName().equals("Sneaky Thief")){
+				
+				GUI.decrementCardCounter();
+				GUI.displayAlert( "Sneaky Thief!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Sneaky Thief\n "+game.getPlayer().getName()+" snatched 100 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Sneaky Thief\n "+game.getOpponent().getName()+" snatched 100 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+				GUI.getAlertStage().setOnHidden(e ->{
+					
+					
+						GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
+						GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
+						
+						GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), game.getPlayer().isShielded() ? "Shielded" : "Not Shielded");
+						GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), game.getOpponent().isShielded() ? "Shielded" : "Not Shielded");
+					GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+				});
+
+		}else if(Board.getPreEffectedCell().getName().equals("Mega Drain")){
+			
+			GUI.decrementCardCounter();
+			GUI.displayAlert( "Mega Drain!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Mega Drain\n "+game.getPlayer().getName()+" snatched 150 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Mega Drain\n "+game.getOpponent().getName()+" snatched 150 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+			GUI.getAlertStage().setOnHidden(e ->{
+				
+				
+					GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
+					GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
+					
+					GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), game.getPlayer().isShielded() ? "Shielded" : "Not Shielded");
+					GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), game.getOpponent().isShielded() ? "Shielded" : "Not Shielded");
+				GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+			});
+
+	}else if(Board.getPreEffectedCell().getName().equals("Contamination Code")){
+		GUI.decrementCardCounter();
+		GUI.displayAlert( "Contamination Code!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Contamination Code\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Contamination Code\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
+		GUI.getAlertStage().setOnHidden(e ->{
+			if (game.getCurrent().equals(game.getPlayer())){
+				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
+			}else{
+				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
 			}
+			GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+			GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+				
+			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+		});
+	}else if(Board.getPreEffectedCell().getName().equals("2319 Alert")){
+		GUI.decrementCardCounter();
+		GUI.displayAlert( "2319 Alert!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: 2319 Alert\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: 2319 Alert\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
+		GUI.getAlertStage().setOnHidden(e ->{
+			if (game.getCurrent().equals(game.getPlayer())){
+				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
+			}else{
+				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
+			}
+			GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+			GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+				
+			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+		});
+	}else if(Board.getPreEffectedCell().getName().equals("Mind Scramble")){
+		GUI.decrementCardCounter();
+		GUI.displayAlert("Mind Scramble!", "Card drawn: Mind Scramble\n Both of the players are confused for 2 turns \n Cards remaining are: "+GUI.getCardCounter());
+		GUI.getAlertStage().setOnHidden(e ->{
+			
+			GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
+			GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
+			GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
+			GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
+			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+		});
+	}else if(Board.getPreEffectedCell().getName().equals("Total Confusion")){
+		GUI.decrementCardCounter();
+		GUI.displayAlert("Total Confusion!", "Card drawn: Total Confusion\n Both of the players are confused for 3 turns \n Cards remaining are: "+GUI.getCardCounter());
+		GUI.getAlertStage().setOnHidden(e ->{
+			
+			GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
+			GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
+			GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
+			GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
+			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+		});
+	}
 			}
 		} catch (InvalidMoveException e) {
 			
