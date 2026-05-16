@@ -151,9 +151,19 @@ public class GUI extends Application{
 	    // Make it mouse transparent so you can still click the buttons underneath
 	    tokenLayer.setMouseTransparent(true);
 		
-	    StackPane RightLayout= new StackPane();
+	    StackPane RightLayoutFrame= new StackPane();
+	    VBox RightLayout= new VBox();
 		Button btn1=new Button();
-		btn1.setMaxSize(15, 15);
+		HBox upperlayout= new HBox();
+		upperlayout.setStyle("-fx-background-color: #ff0000;");
+
+		VBox playerLayout= new VBox();
+		
+		VBox VSLayout= new VBox();
+		
+		VBox opponentLayout=new VBox();
+		
+		
 		
 		int c=0;
 		Image imageOk = new Image(getClass().getResourceAsStream("15.png"));
@@ -171,8 +181,8 @@ public class GUI extends Application{
 	    // 3. Stack the tokenLayer directly on top of the Board
 	    BoardPane.getChildren().addAll(Board, tokenLayer);
 	    
-	    RightLayout.getChildren().add(btn1);
-	    StackPane.setAlignment(btn1, Pos.BOTTOM_RIGHT);
+	    RightLayout.getChildren().addAll(upperlayout,btn1);
+//	    StackPane.setAlignment(btn1, Pos.BOTTOM_RIGHT);
 		for(int i=0; i<10; i++){
 			for(int j=0; j<10; j++){
 				
@@ -326,7 +336,7 @@ public class GUI extends Application{
 		);
 	        
 	        
-		GameScreen =new HBox(BoardPane, RightLayout);
+		GameScreen =new HBox(BoardPane, RightLayoutFrame);
 		
 		BoardPane.prefWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
 		BoardPane.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
@@ -339,10 +349,10 @@ public class GUI extends Application{
 		
 		
 		GameScreen.setAlignment(Pos.CENTER);
-		GameScreen.setSpacing(10);
+		GameScreen.spacingProperty().bind(GameScreen.widthProperty().divide(125));;
 		
-		btn1.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		btn1.prefWidthProperty().bind((GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.9))).multiply(0.9));
+		RightLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		RightLayout.prefWidthProperty().bind((GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.9))).multiply(0.9));
 		
 		// 1. Dynamically get the correct path to the image in this specific package
 		String imageUrl = getClass().getResource("white background.png").toExternalForm();
@@ -366,7 +376,31 @@ public class GUI extends Application{
 		});
 		
 		
+		RightLayoutFrame.getChildren().add(RightLayout);
+		RightLayout.setAlignment(Pos.CENTER);
+		RightLayoutFrame.setStyle("-fx-background-color: blue;"); 
 		
+		upperlayout.getChildren().addAll(playerLayout, VSLayout, opponentLayout);
+//		playerLayout.setStyle("-fx-background-color: orange;"); 
+		
+		RightLayoutFrame.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		RightLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		RightLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		upperlayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.7));
+		upperlayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		
+		btn1.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
+		btn1.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		
+		playerLayout.setStyle("-fx-background-color: orange;");
+		playerLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		playerLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
+		VSLayout.setStyle("-fx-background-color: blue;");
+		VSLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		VSLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.2));
+		opponentLayout.setStyle("-fx-background-color: green;");
+		opponentLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		opponentLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
 		
 	}
 	
