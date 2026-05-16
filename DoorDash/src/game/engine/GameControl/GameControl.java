@@ -143,10 +143,17 @@ public class GameControl {
 	public static void handleUsePowerUpYES() {
 		try {
 			game.usePowerup();
-			if (game.getCurrent() instanceof Dasher)
+			if (game.getCurrent() instanceof Dasher){
 				GUI.displayAlert("POWERUP USED!",
 						"You lost 500 energy!\n Gained 3x movement speed for the next 3 turns");
-			else {
+				if (game.getCurrent().equals(game.getPlayer())) {
+					GUI.updateLabel(GUI.getPlayerStatus(),
+							"Momentum Rush for 3 turns");
+				} else {
+					GUI.updateLabel(GUI.getOpponentStatus(),
+							"Momentum Rush for 3 turns");
+				}
+			}else {
 				if (game.getCurrent() instanceof Dynamo) {
 					GUI.displayAlert("POWERUP USED!",
 							"You lost 500 energy!\n The other opponent is frozen for 1 turn");
@@ -161,23 +168,38 @@ public class GameControl {
 					if (game.getCurrent() instanceof MultiTasker) {
 						GUI.displayAlert("POWERUP USED!",
 								"You lost 500 energy!\n Move at normal speed for the next 2 turns");
+						if (game.getCurrent().equals(game.getPlayer())) {
+							GUI.updateLabel(GUI.getPlayerStatus(),
+									"Focus Mode for 2 turns");
+						} else {
+							GUI.updateLabel(GUI.getOpponentStatus(),
+									"Focus Mode for 2 turns");
+						}
 					} else {
 						GUI.displayAlert(
 								"POWERUP USED!",
 								"You lost 500 energy!\n Steal Energy out of all monsters present (teammates and opponents)");
+						if (game.getCurrent().equals(game.getPlayer())) {
+							GUI.updateLabel(GUI.getPlayerStatus(),
+									"CHAIN ATTACK!!!");
+						} else {
+							GUI.updateLabel(GUI.getOpponentStatus(),
+									"CHAIN ATTACK!!!");
+						}
 					}
 				}
 			}
 
-//			if (game.getCurrent().equals(game.getPlayer())) {
-//				GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game
-//						.getCurrent().getEnergy() + "energy");
-//				
-//			} else {
-//
-//			}
+			if (game.getCurrent().equals(game.getPlayer())) {
+				GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game
+						.getCurrent().getEnergy() + "energy");
+				
+			} else {
+				GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game
+						.getCurrent().getEnergy() + "energy");
+			}
 		} catch (OutOfEnergyException e) {
-
+			GUI.displayAlert("NOT ENOUGH ENERGY","You dont have 500+ energy");
 		} finally {
 
 		}
