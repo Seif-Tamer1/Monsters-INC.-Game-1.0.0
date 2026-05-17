@@ -26,6 +26,7 @@ import game.engine.monsters.MultiTasker;
 public class GameControl {
 	private static Role choosen_role = Role.SCARER;
 	private static Game game;
+	private static double time;
 
 	public static void handleChoosenRole() {
 		if (choosen_role == Role.SCARER) {
@@ -88,15 +89,16 @@ public class GameControl {
 					// Even Row: Move Right (Positive steps)
 					transition1 = handleMoveMonsterOnBoardHelperX(
 							movedDistanceTillRowEndYaMohab, cir);
+					
 				} else {
 					// Odd Row: Move Left (Negative steps)
 					transition1 = handleMoveMonsterOnBoardHelperX(
 							-movedDistanceTillRowEndYaMohab, cir);
 				}
-
+				time+=Math.abs(movedDistanceTillRowEndYaMohab*0.2);
 				// --- STEP 2: Move down a row ---
 				transition2 = handleMoveMonsterOnBoardHelperYDOWN(cir);
-
+				time+=1;
 				// --- STEP 3: Move across the new row ---
 				// We calculate how many steps are left over after finishing
 				// Step 1
@@ -122,6 +124,7 @@ public class GameControl {
 				transition3 = handleMoveMonsterOnBoardHelperX(
 						-(finalPosition - index), cir);
 			}
+			time+=Math.abs((finalPosition - index)*0.2);
 			sequence.getChildren().add(transition3);
 		} else {
 			// --- DOES NOT CHANGE ROWS ---
@@ -132,7 +135,7 @@ public class GameControl {
 			} else {
 				transition1 = handleMoveMonsterOnBoardHelperX(-stepsToMove, cir);
 			}
-
+			time+=Math.abs((stepsToMove)*0.2);
 			sequence.getChildren().add(transition1);
 		}
 
@@ -167,10 +170,10 @@ public class GameControl {
 	                transition1 = handleMoveMonsterOnBoardHelperX(
 	                        movedDistanceTillRowEndYaMohab, cir);
 	            }
-
+	            time+=Math.abs(movedDistanceTillRowEndYaMohab*0.2);
 	            // --- STEP 2: Move UP a row ---
 	            transition2 = handleMoveMonsterOnBoardHelperYUP(cir);
-
+	            time+=1;
 	            // --- STEP 3: Update indices for the next iteration ---
 	            // CRITICAL FIX: Update `index` FIRST, then calculate the new `movedDistance`
 	            index = index - movedDistanceTillRowEndYaMohab - 1;
@@ -192,6 +195,7 @@ public class GameControl {
 	            transition3 = handleMoveMonsterOnBoardHelperX(
 	                    -(finalPosition - index), cir);
 	        }
+	        time+=Math.abs((finalPosition - index)*0.2);
 	        sequence.getChildren().add(transition3);
 	        
 	    } else {
@@ -203,7 +207,7 @@ public class GameControl {
 	        } else {
 	            transition1 = handleMoveMonsterOnBoardHelperX(-stepsToMove, cir); // Moves Right
 	        }
-
+	        time+=Math.abs((stepsToMove)*0.2);
 	        sequence.getChildren().add(transition1);
 	    }
 
@@ -213,7 +217,7 @@ public class GameControl {
 	public static TranslateTransition handleMoveMonsterOnBoardHelperYDOWN(Circle cir) {
 		TranslateTransition transition = new TranslateTransition();
 		transition.setNode(cir);
-		transition.setDuration(Duration.seconds(2)); // Takes 2 seconds to
+		transition.setDuration(Duration.seconds(1)); // Takes 2 seconds to
 														// complete one way
 		transition.setByY(0.0825 * GUI.getScreenHeight());
 		return transition;
@@ -222,7 +226,7 @@ public class GameControl {
 	public static TranslateTransition handleMoveMonsterOnBoardHelperYUP(Circle cir) {
 		TranslateTransition transition = new TranslateTransition();
 		transition.setNode(cir);
-		transition.setDuration(Duration.seconds(2)); // Takes 2 seconds to
+		transition.setDuration(Duration.seconds(1)); // Takes 2 seconds to
 														// complete one way
 		transition.setByY(-0.0825 * GUI.getScreenHeight());
 		return transition;
@@ -318,7 +322,7 @@ public class GameControl {
 				handleMoveMonsterOnBoard(startPos, Board.getPreEffectedPosition(), GUI.getOpponentc());
 			}
 			
-			PauseTransition pause = new PauseTransition(Duration.seconds(10));
+			PauseTransition pause = new PauseTransition(Duration.seconds(time));
 			pause.setOnFinished(event -> {
 				if (Board.getPreEffectedCell() instanceof CardCell){
 					if (Board.getPreEffectedCell().getName().equals("Position Swap")){
@@ -472,15 +476,28 @@ public class GameControl {
 					});
 				}else if (Board.getPreEffectedCell() instanceof DoorCell){
 					
-					GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
+					String txt=game.getCurrent().getRole().equals(((DoorCell)Board.getPreEffectedCell()).getRole())? "ROLE MATCH Gainning "+((DoorCell)Board.getPreEffectedCell()).getEnergy() : "ROLE MISMATCH Losing "+((DoorCell)Board.getPreEffectedCell()).getEnergy();
+					String txt2="";
+					
+					for (int i=0;i< Board.getStationedMonsters().size(); i++){
+						if (Board.getStationedMonsters().get(i).getRole().equals(game.getCurrent().getRole())){
+							txt2 = txt2+Board.getStationedMonsters().get(i).getName()+": "+Board.getStationedMonsters().get(i).getEnergy()+"\n";
+						}
+					}
+					
+					GUI.displayAlert("DoorCell",txt+"\n"+txt2);
 					GUI.getAlertStage().setOnHidden(e ->{
 						
-						handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
-						GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-						GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+						
+						GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
+						GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
 						
 					});
 				}
+				
+				
+				GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+				GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
 			});
 			pause.play();
 			
@@ -489,6 +506,11 @@ public class GameControl {
 			
 		}
 		
+	}
+
+	
+	public static double getTime() {
+		return time;
 	}
 
 	public static Game getGame() {
