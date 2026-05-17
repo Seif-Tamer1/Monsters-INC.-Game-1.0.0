@@ -12,6 +12,10 @@ import game.engine.Game;
 import game.engine.Role;
 import game.engine.GUI.GUI;
 import game.engine.cells.CardCell;
+import game.engine.cells.ContaminationSock;
+import game.engine.cells.ConveyorBelt;
+import game.engine.cells.DoorCell;
+import game.engine.cells.TransportCell;
 import game.engine.exceptions.InvalidMoveException;
 import game.engine.exceptions.OutOfEnergyException;
 import game.engine.monsters.Dasher;
@@ -312,6 +316,7 @@ public class GameControl {
 			}else{
 				handleMoveMonsterOnBoard(startPos, Board.getPreEffectedPosition(), GUI.getOpponentc());
 			}
+			
 			if (Board.getPreEffectedCell() instanceof CardCell){
 				if (Board.getPreEffectedCell().getName().equals("Position Swap")){
 					if (Board.getPreEffectedPosition() != game.getCurrent().getPosition()){
@@ -442,6 +447,36 @@ public class GameControl {
 			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 		});
 	}
+			}else if (Board.getPreEffectedCell() instanceof ConveyorBelt){
+				
+				GUI.displayAlert("ConveyorBelt!", "You are going UP!");
+				GUI.getAlertStage().setOnHidden(e ->{
+					
+					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+					
+				});
+			}else if (Board.getPreEffectedCell() instanceof ContaminationSock){
+				
+				GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
+				GUI.getAlertStage().setOnHidden(e ->{
+					
+					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+					
+				});
+			}else if (Board.getPreEffectedCell() instanceof DoorCell){
+				
+				GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
+				GUI.getAlertStage().setOnHidden(e ->{
+					
+					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+					
+				});
 			}
 		} catch (InvalidMoveException e) {
 			
