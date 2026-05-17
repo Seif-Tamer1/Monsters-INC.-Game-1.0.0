@@ -2,6 +2,7 @@ package game.engine.GameControl;
 
 import java.io.IOException;
 
+import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
@@ -317,44 +318,61 @@ public class GameControl {
 				handleMoveMonsterOnBoard(startPos, Board.getPreEffectedPosition(), GUI.getOpponentc());
 			}
 			
-			if (Board.getPreEffectedCell() instanceof CardCell){
-				if (Board.getPreEffectedCell().getName().equals("Position Swap")){
-					if (Board.getPreEffectedPosition() != game.getCurrent().getPosition()){
+			PauseTransition pause = new PauseTransition(Duration.seconds(10));
+			pause.setOnFinished(event -> {
+				if (Board.getPreEffectedCell() instanceof CardCell){
+					if (Board.getPreEffectedCell().getName().equals("Position Swap")){
+						if (Board.getPreEffectedPosition() != game.getCurrent().getPosition()){
+							GUI.decrementCardCounter();
+							GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n Your Positions are swapped!\n Cards remaining are: "+GUI.getCardCounter());
+							GUI.getAlertStage().setOnHidden(e ->{
+								int currentPlayerPosition=game.getPlayer().getPosition();
+								int currentOpponentPosition=game.getOpponent().getPosition(); 
+								handleMoveMonsterOnBoard(currentPlayerPosition,currentOpponentPosition, GUI.getPlayerc());
+								handleMoveMonsterOnBoard(currentOpponentPosition,currentPlayerPosition, GUI.getOpponentc());
+								
+								GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+								GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+								GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+							});
+								
+						}else{
+							GUI.decrementCardCounter();
+							GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n No swap occured!\n Cards remaining are: "+GUI.getCardCounter());
+							GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+						}
+					} else if(Board.getPreEffectedCell().getName().equals("Super Shield")){
+						
+							GUI.decrementCardCounter();
+							GUI.displayAlert("Super Shield!", "Card drawn: Super Shield\n You are shielded!\n Cards remaining are: "+GUI.getCardCounter());
+							GUI.getAlertStage().setOnHidden(e ->{
+								
+								if (game.getCurrent().equals(game.getPlayer()))
+									GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), "Shielded");
+								else
+									GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), "Shielded");
+								GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+							});
+		
+					} else if(Board.getPreEffectedCell().getName().equals("Small Snatcher")){
+						
 						GUI.decrementCardCounter();
-						GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n Your Positions are swapped!\n Cards remaining are: "+GUI.getCardCounter());
+						GUI.displayAlert( "Small Snatcher!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Small Snatcher\n "+game.getPlayer().getName()+" snatched 50 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Small Snatcher\n "+game.getOpponent().getName()+" snatched 50 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
 						GUI.getAlertStage().setOnHidden(e ->{
-							int currentPlayerPosition=game.getPlayer().getPosition();
-							int currentOpponentPosition=game.getOpponent().getPosition(); 
-							handleMoveMonsterOnBoard(currentPlayerPosition,currentOpponentPosition, GUI.getPlayerc());
-							handleMoveMonsterOnBoard(currentOpponentPosition,currentPlayerPosition, GUI.getOpponentc());
 							
-							GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
-							GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+							
+								GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
+								GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
+								
+								GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), game.getPlayer().isShielded() ? "Shielded" : "Not Shielded");
+								GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), game.getOpponent().isShielded() ? "Shielded" : "Not Shielded");
 							GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 						});
-							
-					}else{
-						GUI.decrementCardCounter();
-						GUI.displayAlert("Position Swap!", "Card drawn: Position Swap\n No swap occured!\n Cards remaining are: "+GUI.getCardCounter());
-						GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-					}
-				} else if(Board.getPreEffectedCell().getName().equals("Super Shield")){
-					
-						GUI.decrementCardCounter();
-						GUI.displayAlert("Super Shield!", "Card drawn: Super Shield\n You are shielded!\n Cards remaining are: "+GUI.getCardCounter());
-						GUI.getAlertStage().setOnHidden(e ->{
-							
-							if (game.getCurrent().equals(game.getPlayer()))
-								GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), "Shielded");
-							else
-								GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), "Shielded");
-							GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-						});
-	
-				} else if(Board.getPreEffectedCell().getName().equals("Small Snatcher")){
+
+				}else if(Board.getPreEffectedCell().getName().equals("Sneaky Thief")){
 					
 					GUI.decrementCardCounter();
-					GUI.displayAlert( "Small Snatcher!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Small Snatcher\n "+game.getPlayer().getName()+" snatched 50 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Small Snatcher\n "+game.getOpponent().getName()+" snatched 50 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+					GUI.displayAlert( "Sneaky Thief!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Sneaky Thief\n "+game.getPlayer().getName()+" snatched 100 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Sneaky Thief\n "+game.getOpponent().getName()+" snatched 100 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
 					GUI.getAlertStage().setOnHidden(e ->{
 						
 						
@@ -366,10 +384,10 @@ public class GameControl {
 						GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 					});
 
-			}else if(Board.getPreEffectedCell().getName().equals("Sneaky Thief")){
+			}else if(Board.getPreEffectedCell().getName().equals("Mega Drain")){
 				
 				GUI.decrementCardCounter();
-				GUI.displayAlert( "Sneaky Thief!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Sneaky Thief\n "+game.getPlayer().getName()+" snatched 100 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Sneaky Thief\n "+game.getOpponent().getName()+" snatched 100 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+				GUI.displayAlert( "Mega Drain!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Mega Drain\n "+game.getPlayer().getName()+" snatched 150 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Mega Drain\n "+game.getOpponent().getName()+" snatched 150 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
 				GUI.getAlertStage().setOnHidden(e ->{
 					
 					
@@ -381,103 +399,91 @@ public class GameControl {
 					GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 				});
 
-		}else if(Board.getPreEffectedCell().getName().equals("Mega Drain")){
-			
+		}else if(Board.getPreEffectedCell().getName().equals("Contamination Code")){
 			GUI.decrementCardCounter();
-			GUI.displayAlert( "Mega Drain!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Mega Drain\n "+game.getPlayer().getName()+" snatched 150 energy from "+game.getOpponent().getName()+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Mega Drain\n "+game.getOpponent().getName()+" snatched 150 energy from "+game.getPlayer().getName()+"\n Cards remaining are: "+GUI.getCardCounter());
+			GUI.displayAlert( "Contamination Code!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Contamination Code\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Contamination Code\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
 			GUI.getAlertStage().setOnHidden(e ->{
-				
-				
-					GUI.updateLabel(GUI.getPlayerMonsterEnergyLabel(), game.getPlayer().getEnergy()+"");
-					GUI.updateLabel(GUI.getOpponentMonsterEnergyLabel(), game.getOpponent().getEnergy()+"");
+				if (game.getCurrent().equals(game.getPlayer())){
+					handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
+				}else{
+					handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
+				}
+				GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+				GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
 					
-					GUI.updateLabel(GUI.getPlayerMonsterShieldedLabel(), game.getPlayer().isShielded() ? "Shielded" : "Not Shielded");
-					GUI.updateLabel(GUI.getOpponentMonsterShieldedLabel(), game.getOpponent().isShielded() ? "Shielded" : "Not Shielded");
 				GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
 			});
-
-	}else if(Board.getPreEffectedCell().getName().equals("Contamination Code")){
-		GUI.decrementCardCounter();
-		GUI.displayAlert( "Contamination Code!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: Contamination Code\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: Contamination Code\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
-		GUI.getAlertStage().setOnHidden(e ->{
-			if (game.getCurrent().equals(game.getPlayer())){
-				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
-			}else{
-				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
-			}
-			GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-			GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+		}else if(Board.getPreEffectedCell().getName().equals("2319 Alert")){
+			GUI.decrementCardCounter();
+			GUI.displayAlert( "2319 Alert!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: 2319 Alert\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: 2319 Alert\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
+			GUI.getAlertStage().setOnHidden(e ->{
+				if (game.getCurrent().equals(game.getPlayer())){
+					handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
+				}else{
+					handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
+				}
+				GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+				GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+					
+				GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+			});
+		}else if(Board.getPreEffectedCell().getName().equals("Mind Scramble")){
+			GUI.decrementCardCounter();
+			GUI.displayAlert("Mind Scramble!", "Card drawn: Mind Scramble\n Both of the players are confused for 2 turns \n Cards remaining are: "+GUI.getCardCounter());
+			GUI.getAlertStage().setOnHidden(e ->{
 				
-			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-		});
-	}else if(Board.getPreEffectedCell().getName().equals("2319 Alert")){
-		GUI.decrementCardCounter();
-		GUI.displayAlert( "2319 Alert!", game.getCurrent().equals(game.getPlayer()) ? "Card drawn: 2319 Alert\n "+game.getOpponent().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter() :  "Card drawn: 2319 Alert\n "+game.getPlayer().getName()+" will move back to the start "+"\n Cards remaining are: "+GUI.getCardCounter());
-		GUI.getAlertStage().setOnHidden(e ->{
-			if (game.getCurrent().equals(game.getPlayer())){
-				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getOpponentc());
-			}else{
-				handleMoveMonsterOnBoard(game.getCurrent().getPosition(),0, GUI.getPlayerc());
-			}
-			GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-			GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+				GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
+				GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
+				GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
+				GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
+				GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+			});
+		}else if(Board.getPreEffectedCell().getName().equals("Total Confusion")){
+			GUI.decrementCardCounter();
+			GUI.displayAlert("Total Confusion!", "Card drawn: Total Confusion\n Both of the players are confused for 3 turns \n Cards remaining are: "+GUI.getCardCounter());
+			GUI.getAlertStage().setOnHidden(e ->{
 				
-			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-		});
-	}else if(Board.getPreEffectedCell().getName().equals("Mind Scramble")){
-		GUI.decrementCardCounter();
-		GUI.displayAlert("Mind Scramble!", "Card drawn: Mind Scramble\n Both of the players are confused for 2 turns \n Cards remaining are: "+GUI.getCardCounter());
-		GUI.getAlertStage().setOnHidden(e ->{
+				GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
+				GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
+				GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
+				GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
+				GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
+			});
+		}
+				}else if (Board.getPreEffectedCell() instanceof ConveyorBelt){
+					
+					GUI.displayAlert("ConveyorBelt!", "You are going UP!");
+					GUI.getAlertStage().setOnHidden(e ->{
+						
+						handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+						GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+						GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+						
+					});
+				}else if (Board.getPreEffectedCell() instanceof ContaminationSock){
+					
+					GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
+					GUI.getAlertStage().setOnHidden(e ->{
+						
+						handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+						GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+						GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+						
+					});
+				}else if (Board.getPreEffectedCell() instanceof DoorCell){
+					
+					GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
+					GUI.getAlertStage().setOnHidden(e ->{
+						
+						handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
+						GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
+						GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
+						
+					});
+				}
+			});
+			pause.play();
 			
-			GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
-			GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
-			GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
-			GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
-			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-		});
-	}else if(Board.getPreEffectedCell().getName().equals("Total Confusion")){
-		GUI.decrementCardCounter();
-		GUI.displayAlert("Total Confusion!", "Card drawn: Total Confusion\n Both of the players are confused for 3 turns \n Cards remaining are: "+GUI.getCardCounter());
-		GUI.getAlertStage().setOnHidden(e ->{
-			
-			GUI.updateLabel(GUI.getPlayerMonsterCurrentRoleLabel(), game.getPlayer().getRole().toString());
-			GUI.updateLabel(GUI.getOpponentMonsterCurrentRoleLabel(), game.getOpponent().getRole().toString());
-			GUI.updateLabel(GUI.getPlayerMonsterConfusedLabel(), "Confused for: "+game.getPlayer().getConfusionTurns()+" turns" );
-			GUI.updateLabel(GUI.getOpponentMonsterConfusedLabel(),"Confused for: "+game.getOpponent().getConfusionTurns()+" turns" );
-			GUI.updateLabel(GUI.getCardCounterLabel(), GUI.getCardCounter()+"");
-		});
-	}
-			}else if (Board.getPreEffectedCell() instanceof ConveyorBelt){
-				
-				GUI.displayAlert("ConveyorBelt!", "You are going UP!");
-				GUI.getAlertStage().setOnHidden(e ->{
-					
-					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
-					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
-					
-				});
-			}else if (Board.getPreEffectedCell() instanceof ContaminationSock){
-				
-				GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
-				GUI.getAlertStage().setOnHidden(e ->{
-					
-					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
-					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
-					
-				});
-			}else if (Board.getPreEffectedCell() instanceof DoorCell){
-				
-				GUI.displayAlert("ContaminationSock!", "You are going DOWN!");
-				GUI.getAlertStage().setOnHidden(e ->{
-					
-					handleMoveMonsterOnBoard(Board.getPreEffectedPosition(),game.getCurrent().getPosition(), game.getCurrent().equals(game.getPlayer()) ? GUI.getPlayerc() : GUI.getOpponentc() );
-					GUI.updateLabel(GUI.getPlayerMonsterPositionLabel(), game.getPlayer().getPosition()+"");
-					GUI.updateLabel(GUI.getOpponentMonsterPositionLabel(), game.getOpponent().getPosition()+"");
-					
-				});
-			}
 		} catch (InvalidMoveException e) {
 			
 			
