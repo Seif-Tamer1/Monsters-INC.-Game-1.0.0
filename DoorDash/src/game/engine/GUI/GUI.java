@@ -248,14 +248,14 @@ public class GUI extends Application {
 			openInstructionsWindow();
 		});
 
-		MainScreen = new VBox(Role_Question_Label, SWITCH_Button, PLAY_Button, INSTRUCTIONS_Button);
+		MainScreen = new VBox( SWITCH_Button, PLAY_Button, INSTRUCTIONS_Button);
 
-		Role_Question_Label.styleProperty().bind(Bindings.concat("-fx-font-family: 'Forte'; -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;"));
+//		Role_Question_Label.styleProperty().bind(Bindings.concat("-fx-font-family: 'Forte'; -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;"));
 		SWITCH_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
 		PLAY_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
 		INSTRUCTIONS_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
 
-		Role_Question_Label.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
+//		Role_Question_Label.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
 		SWITCH_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
 		SWITCH_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
 		PLAY_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
