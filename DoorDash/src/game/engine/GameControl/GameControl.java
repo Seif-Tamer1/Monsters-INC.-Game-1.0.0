@@ -41,15 +41,15 @@ public class GameControl {
 	
 	
 
-	public static Role getChoosen_role() {
-		return choosen_role;
-	}
-
-
-
-	public static void setChoosen_role(Role choosen_role) {
-		GameControl.choosen_role = choosen_role;
-	}
+//	public static Role getChoosen_role() {
+//		return choosen_role;
+//	}
+//
+//
+//
+//	public static void setChoosen_role(Role choosen_role) {
+//		GameControl.choosen_role = choosen_role;
+//	}
 
 
 

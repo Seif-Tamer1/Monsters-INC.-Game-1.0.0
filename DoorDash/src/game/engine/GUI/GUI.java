@@ -206,7 +206,7 @@ public class GUI extends Application {
 		// 4. Set up the Scene Transitions
 		// What happens when the video finishes normally
 		mediaPlayer.setOnEndOfMedia(() -> {
-			buildMainScreen(primaryStage);
+			
 			transitionToMainScreen(primaryStage); // Swap to the actual game menu
 			startBackgroundMusic();
 		});
@@ -214,7 +214,7 @@ public class GUI extends Application {
 		// What happens if they click Skip
 		skipButton.setOnAction(e -> {
 			mediaPlayer.stop(); // Stop the audio/video immediately
-			buildMainScreen(primaryStage);
+			
 			transitionToMainScreen(primaryStage);
 			startBackgroundMusic();
 		});
@@ -226,9 +226,9 @@ public class GUI extends Application {
 
 	public void buildMainScreen(Stage primaryStage) {
 		
-		Label tiltleLabel = new Label("Monsters, INC.");
-		Label welcomeLabel= new Label("");
-		VBox labelLayout = new VBox();
+//		Label tiltleLabel = new Label("Monsters, INC.");
+//		Label welcomeLabel= new Label("");
+//		VBox labelLayout = new VBox();
 
 		SWITCH_Button = new Button("Switch");
 		SWITCH_Button.setOnAction(e -> {
@@ -237,8 +237,10 @@ public class GUI extends Application {
 
 		PLAY_Button = new Button("PLAY!");
 		PLAY_Button.setOnAction(e -> {
-			buildchooseRoleScreen();
-			mainScene.setRoot(chooseRoleScreen);
+//			buildchooseRoleScreen();
+//			mainScene.setRoot(chooseRoleScreen);
+			buildGameScreen();
+			mainScene.setRoot(GameScreen);
 		});
 
 		INSTRUCTIONS_Button = new Button("RULES");
@@ -267,47 +269,47 @@ public class GUI extends Application {
 		
 	}
 	
-	public void buildchooseRoleScreen(){
-		Button scarerButton=new Button();
-		Button laugherButton=new Button();
-		
-		scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
-		scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
-		laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
-		laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
-		
-		
-		scarerButton.styleProperty().bind(
-				Bindings.concat("-fx-background-color: 1c113c; ",
-						"-fx-font-family: 'Lilita One';"
-						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
-						+ " -fx-font-color: 6a1eb5;",
-						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
-		
-		laugherButton.styleProperty().bind(
-				Bindings.concat("-fx-background-color: 1c113c; ",
-						"-fx-font-family: 'Lilita One';"
-						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
-						+ " -fx-font-color: 1faaae;",
-						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
-		
-		chooseRoleScreen= new HBox(scarerButton, laugherButton);
-		
-		chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.15));
-		
-		scarerButton.setOnAction(e->{
-			GameControl.setChoosen_role(Role.SCARER);
-			buildGameScreen();
-			mainScene.setRoot(GameScreen);
-		});
-		
-		laugherButton.setOnAction(e->{
-			GameControl.setChoosen_role(Role.LAUGHER);
-			buildGameScreen();
-			mainScene.setRoot(GameScreen);
-		});
-		
-	}
+//	public void buildchooseRoleScreen(){
+//		Button scarerButton=new Button();
+//		Button laugherButton=new Button();
+//		
+//		scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
+//		scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
+//		laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
+//		laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
+//		
+//		
+//		scarerButton.styleProperty().bind(
+//				Bindings.concat("-fx-background-color: 1c113c; ",
+//						"-fx-font-family: 'Lilita One';"
+//						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
+//						+ " -fx-font-color: 6a1eb5;",
+//						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
+//		
+//		laugherButton.styleProperty().bind(
+//				Bindings.concat("-fx-background-color: 1c113c; ",
+//						"-fx-font-family: 'Lilita One';"
+//						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
+//						+ " -fx-font-color: 1faaae;",
+//						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
+//		
+//		chooseRoleScreen= new HBox(scarerButton, laugherButton);
+//		
+//		chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.15));
+//		
+//		scarerButton.setOnAction(e->{
+//			GameControl.setChoosen_role(Role.SCARER);
+//			buildGameScreen();
+//			mainScene.setRoot(GameScreen);
+//		});
+//		
+//		laugherButton.setOnAction(e->{
+//			GameControl.setChoosen_role(Role.LAUGHER);
+//			buildGameScreen();
+//			mainScene.setRoot(GameScreen);
+//		});
+//		
+//	}
 
 	public void buildGameScreen() {
 		GameControl.startGame();
