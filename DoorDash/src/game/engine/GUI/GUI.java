@@ -2,8 +2,12 @@ package game.engine.GUI;
 
 
 ////NOTE THAT W MAKES YOU WIN AUTOMATICALLY
+
+
 import javafx.scene.input.KeyCode; // Add this to your imports at the top!
+import javafx.scene.input.KeyCombination;
 import game.engine.Constants;
+import game.engine.Role;
 import game.engine.GameControl.GameControl;
 import game.engine.cells.Cell;
 import game.engine.cells.DoorCell;
@@ -11,6 +15,7 @@ import game.engine.monsters.Dasher;
 import game.engine.monsters.Dynamo;
 import game.engine.monsters.Monster;
 import game.engine.monsters.MultiTasker;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
@@ -24,11 +29,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GUI extends Application {
 
@@ -36,12 +45,19 @@ public class GUI extends Application {
 	
 	// MADE PUBLIC STATIC SO WE CAN SWITCH TO GAME OVER OR BACK TO START
 	public static Scene mainScene;
-	public static VBox MainScreen;
+	private static Scene introScene;
 	
-	private VBox StartScreen;
-	private VBox AbousaVideo;
+	
+	
+	
 	private static HBox GameScreen;
 	private VBox GameOverScreen;
+	private StackPane introScreen;
+	public static VBox MainScreen;
+	private HBox chooseRoleScreen;
+	private HBox InstructionsScreen;
+	
+	private static MediaPlayer bgMusicPlayer;
 
 	private static Label Role_Question_Label;
 	private Button SWITCH_Button;
@@ -106,11 +122,13 @@ public class GUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		buildMainScreen(primaryStage);
-
+		
 		primaryStage.setTitle("Monsters INC.");
-		mainScene = new Scene(MainScreen, 640, 480);
+		
+		
+		buildIntroScreen(primaryStage);
+		mainScene = new Scene(introScreen, 640, 480);
+		primaryStage.setScene(mainScene);
 		
 		// THE 'W' CHEAT CODE
 		mainScene.setOnKeyPressed(event -> {
@@ -128,16 +146,89 @@ public class GUI extends Application {
 			}
 		});
 
-		primaryStage.setScene(mainScene);
+		
+		
 		primaryStage.show();
 	}
 
 	public static void main(String[] args) {
 		launch();
 	}
+	
+	public void transitionToMainScreen(Stage primaryStage) {
+	    // 1. Create a Fade Out animation for the intro screen (takes 1 second)
+	    FadeTransition fadeOut = new FadeTransition(Duration.seconds(1.0), introScreen);
+	    fadeOut.setFromValue(1.0);   // Fully visible
+	    fadeOut.setToValue(0.0);     // Fully transparent
+
+	    // 2. Tell the animation what to do AFTER it finishes fading out
+	    fadeOut.setOnFinished(event -> {
+	        buildMainScreen(primaryStage);
+	        
+	        // Start the main screen totally transparent
+	        MainScreen.setOpacity(0.0); 
+	        mainScene.setRoot(MainScreen); // Swap the roots while it's dark
+
+	        // 3. Create a Fade In animation for the main screen
+	        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1.0), MainScreen);
+	        fadeIn.setFromValue(0.0);
+	        fadeIn.setToValue(1.0);
+	        fadeIn.play(); // Play the fade in!
+	    });
+
+	    // Start the fade out!
+	    fadeOut.play();
+	}
+	
+	public void buildIntroScreen(Stage primaryStage) {
+		// 2. Set up the Video Player
+		// This looks for "introVideo.mp4" in the same folder as GUI.java
+		String videoPath = getClass().getResource("Monsters, Inc. Commercial (1080p60).mp4").toExternalForm();
+		Media media = new Media(videoPath);
+		MediaPlayer mediaPlayer = new MediaPlayer(media);
+		MediaView mediaView = new MediaView(mediaPlayer);
+
+		// Make the video dynamically scale to fit the screen size
+		mediaView.fitWidthProperty().bind(primaryStage.widthProperty());
+		mediaView.fitHeightProperty().bind(primaryStage.heightProperty());
+		mediaView.setPreserveRatio(true); // Keeps the video from looking stretched
+
+		// 3. Create the Intro Layout with a "Skip" button
+		Button skipButton = new Button("Skip Intro");
+		skipButton.setStyle("-fx-font-size: 16px; -fx-background-color: rgba(255, 255, 255, 0.7); -fx-font-weight: bold;");
+		StackPane.setAlignment(skipButton, Pos.BOTTOM_RIGHT);
+		StackPane.setMargin(skipButton, new javafx.geometry.Insets(30));
+
+		introScreen = new StackPane();
+		introScreen.setStyle("-fx-background-color: black;"); // Black background for letterboxing
+		introScreen.getChildren().addAll(mediaView, skipButton);
+
+		// 4. Set up the Scene Transitions
+		// What happens when the video finishes normally
+		mediaPlayer.setOnEndOfMedia(() -> {
+			buildMainScreen(primaryStage);
+			transitionToMainScreen(primaryStage); // Swap to the actual game menu
+			startBackgroundMusic();
+		});
+
+		// What happens if they click Skip
+		skipButton.setOnAction(e -> {
+			mediaPlayer.stop(); // Stop the audio/video immediately
+			buildMainScreen(primaryStage);
+			transitionToMainScreen(primaryStage);
+			startBackgroundMusic();
+		});
+
+		// 5. START THE VIDEO
+		mediaPlayer.play();
+	}
+	
 
 	public void buildMainScreen(Stage primaryStage) {
-		Role_Question_Label = new Label("YOU ARE A SCARER!");
+		
+		Label tiltleLabel = new Label("Monsters, INC.");
+		Label welcomeLabel= new Label("");
+		VBox labelLayout = new VBox();
 
 		SWITCH_Button = new Button("Switch");
 		SWITCH_Button.setOnAction(e -> {
@@ -146,8 +237,8 @@ public class GUI extends Application {
 
 		PLAY_Button = new Button("PLAY!");
 		PLAY_Button.setOnAction(e -> {
-			buildGameScreen();
-			mainScene.setRoot(GameScreen);
+			buildchooseRoleScreen();
+			mainScene.setRoot(chooseRoleScreen);
 		});
 
 		INSTRUCTIONS_Button = new Button("RULES");
@@ -172,6 +263,50 @@ public class GUI extends Application {
 
 		MainScreen.spacingProperty().bind(MainScreen.heightProperty().divide(9));
 		MainScreen.setAlignment(Pos.CENTER);
+		
+		
+	}
+	
+	public void buildchooseRoleScreen(){
+		Button scarerButton=new Button();
+		Button laugherButton=new Button();
+		
+		scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
+		scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
+		laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
+		laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
+		
+		
+		scarerButton.styleProperty().bind(
+				Bindings.concat("-fx-background-color: 1c113c; ",
+						"-fx-font-family: 'Lilita One';"
+						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
+						+ " -fx-font-color: 6a1eb5;",
+						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
+		
+		laugherButton.styleProperty().bind(
+				Bindings.concat("-fx-background-color: 1c113c; ",
+						"-fx-font-family: 'Lilita One';"
+						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
+						+ " -fx-font-color: 1faaae;",
+						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
+		
+		chooseRoleScreen= new HBox(scarerButton, laugherButton);
+		
+		chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.15));
+		
+		scarerButton.setOnAction(e->{
+			GameControl.setChoosen_role(Role.SCARER);
+			buildGameScreen();
+			mainScene.setRoot(GameScreen);
+		});
+		
+		laugherButton.setOnAction(e->{
+			GameControl.setChoosen_role(Role.LAUGHER);
+			buildGameScreen();
+			mainScene.setRoot(GameScreen);
+		});
+		
 	}
 
 	public void buildGameScreen() {
@@ -641,6 +776,25 @@ public class GUI extends Application {
 		instructionsStage.show();
 	}
 
+	
+	public static void startBackgroundMusic() {
+	    try {
+	        // Find the audio file
+	        String musicPath = GUI.class.getResource("Monsters University Theme.mp3").toExternalForm();
+	        Media bgMusic = new Media(musicPath);
+	        bgMusicPlayer = new MediaPlayer(bgMusic);
+
+	        // This is the magic line for endless looping!
+	        bgMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+	        
+	        // Lower the volume a bit so it doesn't overpower the game
+	        bgMusicPlayer.setVolume(0.4); 
+
+	        bgMusicPlayer.play();
+	    } catch (Exception e) {
+	        System.out.println("Background music file not found or failed to load.");
+	    }
+	}
 	// NEW: Helper method to dynamically fetch the exact powerup status from the engine
 	public static String getMonsterStatusString(Monster m) {
 		if (m instanceof Dasher) {

@@ -38,6 +38,20 @@ public class GameControl {
 			GUI.updateLabel(GUI.getRole_Question_Label(), "YOU ARE A SCARER!");
 		}
 	}
+	
+	
+
+	public static Role getChoosen_role() {
+		return choosen_role;
+	}
+
+
+
+	public static void setChoosen_role(Role choosen_role) {
+		GameControl.choosen_role = choosen_role;
+	}
+
+
 
 	public static void handlePlayButton() {
 		startGame();
