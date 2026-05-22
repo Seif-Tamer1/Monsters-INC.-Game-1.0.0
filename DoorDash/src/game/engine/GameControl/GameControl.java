@@ -25,31 +25,23 @@ import game.engine.monsters.Monster;
 import game.engine.monsters.MultiTasker;
 
 public class GameControl {
-	private static Role choosen_role = Role.SCARER;
+	private static Role choosen_role;
 	private static Game game;
 	private static double time;
 
-	public static void handleChoosenRole() {
-		if (choosen_role == Role.SCARER) {
-			choosen_role = Role.LAUGHER;
-			GUI.updateLabel(GUI.getRole_Question_Label(), "YOU ARE A LAUGHER!");
-		} else {
-			choosen_role = Role.SCARER;
-			GUI.updateLabel(GUI.getRole_Question_Label(), "YOU ARE A SCARER!");
-		}
-	}
+	
 	
 	
 
-//	public static Role getChoosen_role() {
-//		return choosen_role;
-//	}
-//
-//
-//
-//	public static void setChoosen_role(Role choosen_role) {
-//		GameControl.choosen_role = choosen_role;
-//	}
+	public static Role getChoosen_role() {
+		return choosen_role;
+	}
+
+
+
+	public static void setChoosen_role(Role choosen_role) {
+		GameControl.choosen_role = choosen_role;
+	}
 
 
 

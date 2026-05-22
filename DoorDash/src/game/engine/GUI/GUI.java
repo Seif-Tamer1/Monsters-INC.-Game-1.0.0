@@ -3,7 +3,9 @@ package game.engine.GUI;
 
 ////NOTE THAT W MAKES YOU WIN AUTOMATICALLY
 
-
+import javafx.scene.Cursor;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode; // Add this to your imports at the top!
 import javafx.scene.input.KeyCombination;
 import game.engine.Constants;
@@ -16,11 +18,15 @@ import game.engine.monsters.Dynamo;
 import game.engine.monsters.Monster;
 import game.engine.monsters.MultiTasker;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -54,8 +60,8 @@ public class GUI extends Application {
 	private VBox GameOverScreen;
 	private StackPane introScreen;
 	public static VBox MainScreen;
-	private HBox chooseRoleScreen;
-	private HBox InstructionsScreen;
+	private VBox chooseRoleScreen;
+	private VBox InstructionsScreen;
 	
 	private static MediaPlayer bgMusicPlayer;
 
@@ -112,13 +118,13 @@ public class GUI extends Application {
 	// Arrays for specific cell types
 		
 
-		// Helper method to check if a cell index belongs to a specific type
-		public static boolean contains(int[] array, int key) {
-			for (int i : array) {
-				if (i == key) return true;
-			}
-			return false;
+	// Helper method to check if a cell index belongs to a specific type
+	public static boolean contains(int[] array, int key) {
+		for (int i : array) {
+			if (i == key) return true;
 		}
+		return false;
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -127,6 +133,8 @@ public class GUI extends Application {
 		
 		
 		buildIntroScreen(primaryStage);
+		
+		
 		mainScene = new Scene(introScreen, 640, 480);
 		primaryStage.setScene(mainScene);
 		
@@ -155,30 +163,7 @@ public class GUI extends Application {
 		launch();
 	}
 	
-	public void transitionToMainScreen(Stage primaryStage) {
-	    // 1. Create a Fade Out animation for the intro screen (takes 1 second)
-	    FadeTransition fadeOut = new FadeTransition(Duration.seconds(1.0), introScreen);
-	    fadeOut.setFromValue(1.0);   // Fully visible
-	    fadeOut.setToValue(0.0);     // Fully transparent
-
-	    // 2. Tell the animation what to do AFTER it finishes fading out
-	    fadeOut.setOnFinished(event -> {
-	        buildMainScreen(primaryStage);
-	        
-	        // Start the main screen totally transparent
-	        MainScreen.setOpacity(0.0); 
-	        mainScene.setRoot(MainScreen); // Swap the roots while it's dark
-
-	        // 3. Create a Fade In animation for the main screen
-	        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1.0), MainScreen);
-	        fadeIn.setFromValue(0.0);
-	        fadeIn.setToValue(1.0);
-	        fadeIn.play(); // Play the fade in!
-	    });
-
-	    // Start the fade out!
-	    fadeOut.play();
-	}
+	
 	
 	public void buildIntroScreen(Stage primaryStage) {
 		// 2. Set up the Video Player
@@ -206,16 +191,16 @@ public class GUI extends Application {
 		// 4. Set up the Scene Transitions
 		// What happens when the video finishes normally
 		mediaPlayer.setOnEndOfMedia(() -> {
-			
-			transitionToMainScreen(primaryStage); // Swap to the actual game menu
+			buildMainScreen(primaryStage);
+			switchToScreen(introScreen, MainScreen); // Swap to the actual game menu
 			startBackgroundMusic();
 		});
 
 		// What happens if they click Skip
 		skipButton.setOnAction(e -> {
 			mediaPlayer.stop(); // Stop the audio/video immediately
-			
-			transitionToMainScreen(primaryStage);
+			buildMainScreen(primaryStage);
+			switchToScreen(introScreen, MainScreen);
 			startBackgroundMusic();
 		});
 
@@ -225,92 +210,472 @@ public class GUI extends Application {
 	
 
 	public void buildMainScreen(Stage primaryStage) {
-		
-//		Label tiltleLabel = new Label("Monsters, INC.");
-//		Label welcomeLabel= new Label("");
-//		VBox labelLayout = new VBox();
+	    javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
+	    
+	    Label welcomeLabel = new Label("WELCOME");
+	    Label monstersINCLabel = new Label("Monsters, INC.");
+	    VBox mainLabelLayout = new VBox(welcomeLabel, monstersINCLabel);
+	    mainLabelLayout.setAlignment(Pos.CENTER);
+	    
+	    Button playButton = new Button();
+	    Label playlbl = new Label("PLAY");
+	    String playMonsterImgUrl = getClass().getResource("PLAYMonster.png").toExternalForm(); 
+	    ImageView playMonsterImgView = new ImageView(new Image(playMonsterImgUrl));
+	    playMonsterImgView.setPreserveRatio(true);
+	    VBox whitePlay = new VBox(playlbl, playMonsterImgView);
+	    
+	    Button rulesButton = new Button();
+	    Label ruleslbl = new Label("RULES");
+	    String rulesImgUrl = getClass().getResource("RULESMonster.png").toExternalForm(); 
+	    ImageView rulesImgView = new ImageView(new Image(rulesImgUrl));
+	    rulesImgView.setPreserveRatio(true);
+	    VBox whiteRules = new VBox(ruleslbl, rulesImgView);
+	    
+	    HBox playRulesLayout = new HBox(playButton, rulesButton);
+	    MainScreen = new VBox(mainLabelLayout, playRulesLayout);
+	    
+	    // Outer Button Styling (Acts as the thick border)
+	    playButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", MainScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", MainScreen.heightProperty().divide(60).asString(), "px;"));
+	    
+	    rulesButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", MainScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", MainScreen.heightProperty().divide(60).asString(), "px;"));
+	    
+	    // Inner White Box Styling
+	    whitePlay.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f7f3ee; ",
+	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    whiteRules.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f7f3ee; ",
+	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    // Text Styling
+	    playlbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding:  0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;",
+	                    " -fx-text-fill: #6a1eb5;"));
+	    
+	    ruleslbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding: 0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;",
+	                    " -fx-text-fill: #6a1eb5;"));
+	    
+	    welcomeLabel.styleProperty().bind(
+	            Bindings.concat("-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", MainScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-text-fill: #1c113c;"));
+	    
+	    monstersINCLabel.styleProperty().bind(
+	            Bindings.concat("-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", MainScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-text-fill: #1c113c;"));
+	    
+	    // Layout & Sizing
+	    MainScreen.spacingProperty().bind(MainScreen.widthProperty().multiply(0.05));
+	    playRulesLayout.spacingProperty().bind(MainScreen.widthProperty().multiply(0.12));
+	    
+	    playButton.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55));
+	    playButton.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22));
+	    rulesButton.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55));
+	    rulesButton.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22));
+	    
+	    whitePlay.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55).multiply(0.9));
+	    whiteRules.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22).multiply(0.9));
+	    
+	    playMonsterImgView.fitHeightProperty().bind(playButton.heightProperty().multiply(0.6));
+	    rulesImgView.fitHeightProperty().bind(rulesButton.heightProperty().multiply(0.6));
+	    
+	    MainScreen.setAlignment(Pos.CENTER);
+	    playRulesLayout.setAlignment(Pos.CENTER);
+	    playButton.setAlignment(Pos.CENTER);
+	    rulesButton.setAlignment(Pos.CENTER);
+	    
+	    playButton.setGraphic(whitePlay);
+	    rulesButton.setGraphic(whiteRules);
+	    
+	    playButton.setContentDisplay(ContentDisplay.CENTER);
+	    rulesButton.setContentDisplay(ContentDisplay.CENTER);
+	    
+	    addHoverEffect(playButton);
+	    addHoverEffect(rulesButton);
+	    
+	    // Actions
+	    playButton.setOnAction(e -> {
+	    	if (chooseRoleScreen == null) {
+	            buildchooseRoleScreen(); 
+	        }
+	        switchToScreen(MainScreen, chooseRoleScreen);
+	    });
+	    
+	    rulesButton.setOnAction(e -> {
+	    	if (InstructionsScreen == null) {
+	    		buildInstructionsScreen(); 
+	        }
+	        switchToScreen(MainScreen, InstructionsScreen);
+	    	
+	    });
+	    
+	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    MainScreen.setStyle(cssBackground);
+	}
 
-		SWITCH_Button = new Button("Switch");
-		SWITCH_Button.setOnAction(e -> {
-			GameControl.handleChoosenRole();
-		});
-
-		PLAY_Button = new Button("PLAY!");
-		PLAY_Button.setOnAction(e -> {
-//			buildchooseRoleScreen();
-//			mainScene.setRoot(chooseRoleScreen);
-			buildGameScreen();
-			mainScene.setRoot(GameScreen);
-		});
-
-		INSTRUCTIONS_Button = new Button("RULES");
-		INSTRUCTIONS_Button.setOnAction(e -> {
-			openInstructionsWindow();
-		});
-
-		MainScreen = new VBox( SWITCH_Button, PLAY_Button, INSTRUCTIONS_Button);
-
-//		Role_Question_Label.styleProperty().bind(Bindings.concat("-fx-font-family: 'Forte'; -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;"));
-		SWITCH_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
-		PLAY_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
-		INSTRUCTIONS_Button.styleProperty().bind(Bindings.concat("-fx-font-size: ", MainScreen.widthProperty().divide(30.0).asString(), "px;"));
-
-//		Role_Question_Label.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
-		SWITCH_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
-		SWITCH_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
-		PLAY_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
-		PLAY_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
-		INSTRUCTIONS_Button.prefWidthProperty().bind(MainScreen.widthProperty().divide(5));
-		INSTRUCTIONS_Button.prefHeightProperty().bind(MainScreen.heightProperty().divide(9));
-
-		MainScreen.spacingProperty().bind(MainScreen.heightProperty().divide(9));
-		MainScreen.setAlignment(Pos.CENTER);
-		
-		
+	public void buildchooseRoleScreen() {
+	    javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
+	    
+	    Label chooseRoleLabel = new Label("CHOOSE YOUR ROLE");
+	    
+	    Button scarerButton = new Button();
+	    Label scarerlbl = new Label("Scarer"); // Changed to Title Case to match mockup
+	    String scarerImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    ImageView scarerImgView = new ImageView(new Image(scarerImgUrl));
+	    scarerImgView.setPreserveRatio(true);
+	    VBox whiteScarer = new VBox(scarerlbl, scarerImgView);
+	    
+	    Button laugherButton = new Button();
+	    Label laugherlbl = new Label("Laugher"); // Changed to Title Case
+	    String laugherImgUrl = getClass().getResource("laugherMonster2.jpg").toExternalForm();
+	    ImageView laugherImgView = new ImageView(new Image(laugherImgUrl));
+	    laugherImgView.setPreserveRatio(true);
+	    
+	    // FIX: Corrected to hold the laugher components, not the scarer ones
+	    VBox whiteLaugher = new VBox(laugherlbl, laugherImgView); 
+	    
+	    HBox scarerLaugherLayout = new HBox(scarerButton, laugherButton);
+	    chooseRoleScreen = new VBox(chooseRoleLabel, scarerLaugherLayout);
+	    
+	    // Outer Button Styling (Thick Borders)
+	    scarerButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", chooseRoleScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    laugherButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", chooseRoleScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    // Inner White Box Styling
+	    whiteScarer.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    whiteLaugher.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    // Text Styling (Colors adjusted to match mockup 2)
+	    scarerlbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding: 0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	    
+	    laugherlbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding:  0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	    
+	    chooseRoleLabel.styleProperty().bind(
+	            Bindings.concat("-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-text-fill: #1c113c;"));
+	    
+	    // Layout & Sizing
+	    chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.05));
+	    scarerLaugherLayout.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.12));
+	    whiteScarer.spacingProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    whiteLaugher.spacingProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    
+	    scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55));
+	    scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22));
+	    laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55));
+	    laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22));
+	    
+	    whiteScarer.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.9));
+	    whiteLaugher.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22).multiply(0.9));
+	    
+	    scarerImgView.fitHeightProperty().bind(scarerButton.heightProperty().multiply(0.6));
+	    laugherImgView.fitHeightProperty().bind(laugherButton.heightProperty().multiply(0.6));
+	    
+	    chooseRoleScreen.setAlignment(Pos.CENTER);
+	    scarerLaugherLayout.setAlignment(Pos.CENTER);
+	    scarerButton.setAlignment(Pos.CENTER);
+	    laugherButton.setAlignment(Pos.CENTER);
+	    
+	    scarerButton.setGraphic(whiteScarer);
+	    laugherButton.setGraphic(whiteLaugher);
+	    
+	    scarerButton.setContentDisplay(ContentDisplay.CENTER);
+	    laugherButton.setContentDisplay(ContentDisplay.CENTER);
+	    
+	    addHoverEffect(scarerButton);
+	    addHoverEffect(laugherButton);
+	    
+	    // Actions
+	    scarerButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.SCARER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(chooseRoleScreen, GameScreen);
+	        
+	    });
+	    
+	    laugherButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.LAUGHER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(chooseRoleScreen, GameScreen);
+	    });
+	    
+	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    chooseRoleScreen.setStyle(cssBackground);
 	}
 	
-//	public void buildchooseRoleScreen(){
-//		Button scarerButton=new Button();
-//		Button laugherButton=new Button();
-//		
-//		scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
-//		scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
-//		laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.7));
-//		laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.25));
-//		
-//		
-//		scarerButton.styleProperty().bind(
-//				Bindings.concat("-fx-background-color: 1c113c; ",
-//						"-fx-font-family: 'Lilita One';"
-//						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
-//						+ " -fx-font-color: 6a1eb5;",
-//						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
-//		
-//		laugherButton.styleProperty().bind(
-//				Bindings.concat("-fx-background-color: 1c113c; ",
-//						"-fx-font-family: 'Lilita One';"
-//						+ " -fx-font-size: ",MainScreen.widthProperty().divide(30).asString(), "px;" 
-//						+ " -fx-font-color: 1faaae;",
-//						"-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(400).asString(), "px;"));
-//		
-//		chooseRoleScreen= new HBox(scarerButton, laugherButton);
-//		
-//		chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.15));
-//		
-//		scarerButton.setOnAction(e->{
-//			GameControl.setChoosen_role(Role.SCARER);
-//			buildGameScreen();
-//			mainScene.setRoot(GameScreen);
-//		});
-//		
-//		laugherButton.setOnAction(e->{
-//			GameControl.setChoosen_role(Role.LAUGHER);
-//			buildGameScreen();
-//			mainScene.setRoot(GameScreen);
-//		});
-//		
-//	}
+	public void buildInstructionsScreen() {
+	    javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
+	    
+	    Label instructionsLabel = new Label("Instructions");
+	    
+	    Button monstersButton = new Button();
+	    Label monsterslbl = new Label("Monsters"); // Changed to Title Case to match mockup
+	    String monstersImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    ImageView monstersImgView = new ImageView(new Image(monstersImgUrl));
+	    monstersImgView.setPreserveRatio(true);
+	    VBox whiteMonsters = new VBox(monsterslbl, monstersImgView);
+	    
+	    Button cardsButton = new Button();
+	    Label cardslbl = new Label("Cards"); // Changed to Title Case to match mockup
+	    String cardsImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    ImageView cardsImgView = new ImageView(new Image(cardsImgUrl));
+	    cardsImgView.setPreserveRatio(true);
+	    VBox whiteCards = new VBox(cardslbl, cardsImgView);
+	    
+	    Button cellsButton = new Button();
+	    Label cellslbl = new Label("Cells"); // Changed to Title Case
+	    String cellsImgUrl = getClass().getResource("laugherMonster2.jpg").toExternalForm();
+	    ImageView cellsImgView = new ImageView(new Image(cellsImgUrl));
+	    cellsImgView.setPreserveRatio(true);
+	    VBox whiteCells = new VBox(cellslbl, cellsImgView);
+	    
+	    Button gameRulesButton = new Button();
+	    Label gameRuleslbl = new Label("Rules"); // Changed to Title Case to match mockup
+	    String gameRulesImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    ImageView gameRulesImgView = new ImageView(new Image(gameRulesImgUrl));
+	    gameRulesImgView.setPreserveRatio(true);
+	    VBox whitegameRules = new VBox(gameRuleslbl, gameRulesImgView);
+	    
+	    
+	    
+	    HBox widgetsLayout = new HBox(monstersButton, cardsButton, cellsButton, gameRulesButton);
+	    InstructionsScreen = new VBox(instructionsLabel, widgetsLayout);
+	    
+	    // Outer Button Styling (Thick Borders)
+	    monstersButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    cardsButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    cellsButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    gameRulesButton.styleProperty().bind(
+	            Bindings.concat("-fx-background-color: #1c113c; ",
+	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
+	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	    
+	    // Inner White Box Styling
+	    whiteMonsters.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    whiteCells.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    whiteCards.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    whitegameRules.styleProperty().bind(
+	            Bindings.concat(
+	            		"-fx-padding: 0;",
+	            		"-fx-background-color: #f4f1ec; ",
+	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-alignment: center;"));
+	    
+	    // Text Styling (Colors adjusted to match mockup 2)
+	    monsterslbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding: 0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	    
+	    cellslbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding:  0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	    
+	    cardslbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding: 0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	    
+	    gameRuleslbl.styleProperty().bind(
+	            Bindings.concat("-fx-padding:  0;",
+	                    "-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
+	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	    
+	    instructionsLabel.styleProperty().bind(
+	            Bindings.concat("-fx-font-family: 'Lilita One';",
+	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-text-fill: #1c113c;"));
+	    
+	    // Layout & Sizing
+	    InstructionsScreen.spacingProperty().bind(InstructionsScreen.widthProperty().multiply(0.05));
+	    widgetsLayout.spacingProperty().bind(InstructionsScreen.widthProperty().multiply(0.05));
+	    whiteMonsters.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    whiteCards.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    whiteCells.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    whitegameRules.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    
+	    monstersButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
+	    monstersButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
+	    cardsButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
+	    cardsButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
+	    cellsButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
+	    cellsButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
+	    gameRulesButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
+	    gameRulesButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
+	    
+	    // Bind Heights
+	    whiteMonsters.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
+	    whiteCards.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
+	    whiteCells.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
+	    whitegameRules.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
 
+	    // Bind Widths
+	    whiteMonsters.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
+	    whiteCards.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
+	    whiteCells.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
+	    whitegameRules.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
+	    
+	    monstersImgView.fitHeightProperty().bind(monstersButton.heightProperty().multiply(0.5));
+	    cardsImgView.fitHeightProperty().bind(cardsButton.heightProperty().multiply(0.5));
+	    cellsImgView.fitHeightProperty().bind(cellsButton.heightProperty().multiply(0.5));
+	    gameRulesImgView.fitHeightProperty().bind(gameRulesButton.heightProperty().multiply(0.5));
+	    
+	    InstructionsScreen.setAlignment(Pos.CENTER);
+	    widgetsLayout.setAlignment(Pos.CENTER);
+	    monstersButton.setAlignment(Pos.CENTER);
+	    cardsButton.setAlignment(Pos.CENTER);
+	    cellsButton.setAlignment(Pos.CENTER);
+	    gameRulesButton.setAlignment(Pos.CENTER);
+	    
+	    monstersButton.setGraphic(whiteMonsters);
+	    cardsButton.setGraphic(whiteCards);
+	    cellsButton.setGraphic(whiteCells);
+	    gameRulesButton.setGraphic(whitegameRules);
+	    
+	    monstersButton.setContentDisplay(ContentDisplay.CENTER);
+	    cardsButton.setContentDisplay(ContentDisplay.CENTER);
+	    cellsButton.setContentDisplay(ContentDisplay.CENTER);
+	    gameRulesButton.setContentDisplay(ContentDisplay.CENTER);
+	    
+	    addHoverEffect(monstersButton);
+	    addHoverEffect(cardsButton);
+	    addHoverEffect(cellsButton);
+	    addHoverEffect(gameRulesButton);
+	    // Actions
+	    monstersButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.SCARER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(InstructionsScreen, GameScreen);
+	        
+	    });
+	    
+	    cardsButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.LAUGHER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(InstructionsScreen, GameScreen);
+	    });
+	    
+	    cellsButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.SCARER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(InstructionsScreen, GameScreen);
+	        
+	    });
+	    
+	    gameRulesButton.setOnAction(e -> {
+	        GameControl.setChoosen_role(Role.LAUGHER);
+	        if (GameScreen == null) {
+	        	buildGameScreen();
+	        }
+	        switchToScreen(InstructionsScreen, GameScreen);
+	    });
+	    
+	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    InstructionsScreen.setStyle(cssBackground);
+	}
+	
 	public void buildGameScreen() {
 		GameControl.startGame();
 
@@ -777,6 +1142,58 @@ public class GUI extends Application {
 		instructionsStage.setScene(scene);
 		instructionsStage.show();
 	}
+	
+	// Helper 1: Smoothly fade to a new screen
+	private void switchToScreen(Parent oldRoot, Parent newRoot) {
+		
+		// 1. Create a Fade Out animation for the intro screen (takes 1 second)
+	    FadeTransition fadeOut = new FadeTransition(Duration.seconds(1.0), oldRoot);
+	    fadeOut.setFromValue(1.0);   // Fully visible
+	    fadeOut.setToValue(0.0);     // Fully transparent
+
+	    // 2. Tell the animation what to do AFTER it finishes fading out
+	    fadeOut.setOnFinished(event -> {
+	        
+	        
+	        // Start the main screen totally transparent
+	        newRoot.setOpacity(0.0); 
+	        mainScene.setRoot(newRoot); // Swap the roots while it's dark
+
+	        // 3. Create a Fade In animation for the main screen
+	        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1.0), newRoot);
+	        fadeIn.setFromValue(0.0);
+	        fadeIn.setToValue(1.0);
+	        fadeIn.play(); // Play the fade in!
+	    });
+
+	    // Start the fade out!
+	    fadeOut.play();
+	    
+	    
+	    
+	    
+	}
+
+	// Helper 2: Make buttons pop out when hovered
+	private void addHoverEffect(Node node) {
+	    ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), node);
+	    scaleUp.setToX(1.05); // Grow by 5%
+	    scaleUp.setToY(1.05);
+
+	    ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), node);
+	    scaleDown.setToX(1.0); // Return to normal size
+	    scaleDown.setToY(1.0);
+
+	    node.setOnMouseEntered(e -> {
+	        node.setCursor(Cursor.HAND); // Change mouse pointer to a hand
+	        scaleUp.playFromStart();
+	    });
+	    
+	    node.setOnMouseExited(e -> {
+	        node.setCursor(Cursor.DEFAULT);
+	        scaleDown.playFromStart();
+	    });
+	}
 
 	
 	public static void startBackgroundMusic() {
@@ -790,7 +1207,7 @@ public class GUI extends Application {
 	        bgMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 	        
 	        // Lower the volume a bit so it doesn't overpower the game
-	        bgMusicPlayer.setVolume(0.4); 
+	        bgMusicPlayer.setVolume(0.15); 
 
 	        bgMusicPlayer.play();
 	    } catch (Exception e) {
