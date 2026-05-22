@@ -144,18 +144,29 @@ public class GUI extends Application {
 		
 		// THE 'W' CHEAT CODE
 		mainScene.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.W) {
-				if (GameControl.getGame() != null && GameControl.getGame().getCurrent() != null) {
-					Monster current = GameControl.getGame().getCurrent();
-					
-					// Force the win conditions
-					current.setPosition(99);
-					current.setEnergy(1500); 
-					
-					// Trigger the end of turn logic to check for the winner and jump to Game Over
-					GameControl.endOfTurn(); 
-				}
-			}
+		    // Ensure the game state is valid before applying cheats
+		    if (GameControl.getGame() != null && GameControl.getGame().getCurrent() != null) {
+		        Monster current = GameControl.getGame().getCurrent();
+
+		        // 'W' Cheat: Force the winning scenario
+		        if (event.getCode() == KeyCode.W) {
+		            current.setPosition(99);
+		            updateLabel(playerMonsterPositionLabel,"Position: "+ GameControl.getGame().getPlayer().getPosition());
+		            updateLabel(opponentMonsterPositionLabel,"Position: "+ GameControl.getGame().getOpponent().getPosition()+"");
+		            // Trigger the end of turn logic to check for the winner and jump to Game Over
+		            GameControl.endOfTurn(); 
+		        } 
+		        // 'E' Cheat: Increase the monster's energy by 500
+		        else if (event.getCode() == KeyCode.E) {
+		            int newEnergy = current.getEnergy() + 500;
+		            current.setEnergy(newEnergy);
+		            
+		            updateLabel(playerMonsterEnergyLabel, GameControl.getGame().getPlayer().getEnergy()+" energy");
+		            updateLabel(opponentMonsterEnergyLabel, GameControl.getGame().getOpponent().getEnergy()+" energy");
+		            // Optional: Print to console for debugging
+		            System.out.println("Cheat Activated: Energy increased to " + newEnergy);
+		        }
+		    }
 		});
 
 		
