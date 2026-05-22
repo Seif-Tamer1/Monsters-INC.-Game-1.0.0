@@ -62,6 +62,10 @@ public class GUI extends Application {
 	public static VBox MainScreen;
 	private VBox chooseRoleScreen;
 	private VBox InstructionsScreen;
+	private HBox monstersScreen;
+	private HBox cardsScreen;
+	private HBox cellsScreen;
+	private HBox gameRulesScreen;
 	
 	private static MediaPlayer bgMusicPlayer;
 
@@ -237,65 +241,64 @@ public class GUI extends Application {
 	    // Outer Button Styling (Acts as the thick border)
 	    playButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", MainScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", MainScreen.heightProperty().divide(60).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: Switched to heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(60).asString("%.0f"), "px;")); 
 	    
 	    rulesButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", MainScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", MainScreen.heightProperty().divide(60).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: Switched to heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(60).asString("%.0f"), "px;")); 
 	    
 	    // Inner White Box Styling
 	    whitePlay.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f7f3ee; ",
-	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    whiteRules.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f7f3ee; ",
-	                    "-fx-background-radius: ", MainScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    // Text Styling
 	    playlbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(18).asString("%.0f"), "px;", // EDITED: Switched to heightProperty to prevent overflow
 	                    " -fx-text-fill: #6a1eb5;"));
 	    
 	    ruleslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding: 0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", MainScreen.widthProperty().divide(30).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(18).asString("%.0f"), "px;", // EDITED: Switched to heightProperty
 	                    " -fx-text-fill: #6a1eb5;"));
 	    
 	    welcomeLabel.styleProperty().bind(
 	            Bindings.concat("-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", MainScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;", // EDITED: Switched to heightProperty
 	                    " -fx-text-fill: #1c113c;"));
 	    
 	    monstersINCLabel.styleProperty().bind(
 	            Bindings.concat("-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", MainScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;", // EDITED: Switched to heightProperty
 	                    " -fx-text-fill: #1c113c;"));
 	    
 	    // Layout & Sizing
-	    MainScreen.spacingProperty().bind(MainScreen.widthProperty().multiply(0.05));
-	    playRulesLayout.spacingProperty().bind(MainScreen.widthProperty().multiply(0.12));
+	    MainScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05)); // EDITED: Switched to heightProperty
+	    playRulesLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.12)); // EDITED: Switched to heightProperty
 	    
-	    playButton.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55));
-	    playButton.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22));
-	    rulesButton.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55));
-	    rulesButton.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22));
+	    // EDITED: Removed individual pref bindings and used bindDynamicSize helper
+	    bindDynamicSize(playButton, mainScene.heightProperty().multiply(0.40), mainScene.heightProperty().multiply(0.55));
+	    bindDynamicSize(rulesButton, mainScene.heightProperty().multiply(0.40), mainScene.heightProperty().multiply(0.55));
 	    
-	    whitePlay.prefHeightProperty().bind(MainScreen.heightProperty().multiply(0.55).multiply(0.9));
-	    whiteRules.prefWidthProperty().bind(MainScreen.widthProperty().multiply(0.22).multiply(0.9));
+	    bindDynamicSize(whitePlay, mainScene.heightProperty().multiply(0.40).multiply(0.9), mainScene.heightProperty().multiply(0.55).multiply(0.9));
+	    bindDynamicSize(whiteRules, mainScene.heightProperty().multiply(0.40).multiply(0.9), mainScene.heightProperty().multiply(0.55).multiply(0.9));
 	    
 	    playMonsterImgView.fitHeightProperty().bind(playButton.heightProperty().multiply(0.6));
 	    rulesImgView.fitHeightProperty().bind(rulesButton.heightProperty().multiply(0.6));
@@ -327,7 +330,6 @@ public class GUI extends Application {
 	    		buildInstructionsScreen(); 
 	        }
 	        switchToScreen(MainScreen, InstructionsScreen);
-	    	
 	    });
 	    
 	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
@@ -341,83 +343,81 @@ public class GUI extends Application {
 	    Label chooseRoleLabel = new Label("CHOOSE YOUR ROLE");
 	    
 	    Button scarerButton = new Button();
-	    Label scarerlbl = new Label("Scarer"); // Changed to Title Case to match mockup
+	    Label scarerlbl = new Label("Scarer");
 	    String scarerImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
 	    ImageView scarerImgView = new ImageView(new Image(scarerImgUrl));
 	    scarerImgView.setPreserveRatio(true);
 	    VBox whiteScarer = new VBox(scarerlbl, scarerImgView);
 	    
 	    Button laugherButton = new Button();
-	    Label laugherlbl = new Label("Laugher"); // Changed to Title Case
+	    Label laugherlbl = new Label("Laugher"); 
 	    String laugherImgUrl = getClass().getResource("laugherMonster2.jpg").toExternalForm();
 	    ImageView laugherImgView = new ImageView(new Image(laugherImgUrl));
 	    laugherImgView.setPreserveRatio(true);
 	    
-	    // FIX: Corrected to hold the laugher components, not the scarer ones
 	    VBox whiteLaugher = new VBox(laugherlbl, laugherImgView); 
 	    
 	    HBox scarerLaugherLayout = new HBox(scarerButton, laugherButton);
 	    chooseRoleScreen = new VBox(chooseRoleLabel, scarerLaugherLayout);
 	    
-	    // Outer Button Styling (Thick Borders)
+	    // Outer Button Styling
 	    scarerButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", chooseRoleScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ",
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    laugherButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", chooseRoleScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", chooseRoleScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    // Inner White Box Styling
 	    whiteScarer.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    whiteLaugher.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", chooseRoleScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
-	    // Text Styling (Colors adjusted to match mockup 2)
+	    // Text Styling 
 	    scarerlbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding: 0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(18).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #6a1eb5;")); 
 	    
 	    laugherlbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(18).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #1faaae;")); 
 	    
 	    chooseRoleLabel.styleProperty().bind(
 	            Bindings.concat("-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", chooseRoleScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;", // EDITED: heightProperty
 	                    " -fx-text-fill: #1c113c;"));
 	    
 	    // Layout & Sizing
-	    chooseRoleScreen.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.05));
-	    scarerLaugherLayout.spacingProperty().bind(chooseRoleScreen.widthProperty().multiply(0.12));
-	    whiteScarer.spacingProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.07));
-	    whiteLaugher.spacingProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    chooseRoleScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05)); // EDITED: heightProperty
+	    scarerLaugherLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.12)); // EDITED: heightProperty
+	    whiteScarer.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); // EDITED: heightProperty
+	    whiteLaugher.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); // EDITED: heightProperty
 	    
-	    scarerButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55));
-	    scarerButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22));
-	    laugherButton.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55));
-	    laugherButton.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22));
+	    // EDITED: Used bindDynamicSize helper
+	    bindDynamicSize(scarerButton, mainScene.heightProperty().multiply(0.40), mainScene.heightProperty().multiply(0.55));
+	    bindDynamicSize(laugherButton, mainScene.heightProperty().multiply(0.40), mainScene.heightProperty().multiply(0.55));
 	    
-	    whiteScarer.prefHeightProperty().bind(chooseRoleScreen.heightProperty().multiply(0.55).multiply(0.9));
-	    whiteLaugher.prefWidthProperty().bind(chooseRoleScreen.widthProperty().multiply(0.22).multiply(0.9));
+	    bindDynamicSize(whiteScarer, mainScene.heightProperty().multiply(0.40).multiply(0.9), mainScene.heightProperty().multiply(0.55).multiply(0.9));
+	    bindDynamicSize(whiteLaugher, mainScene.heightProperty().multiply(0.40).multiply(0.9), mainScene.heightProperty().multiply(0.55).multiply(0.9));
 	    
 	    scarerImgView.fitHeightProperty().bind(scarerButton.heightProperty().multiply(0.6));
 	    laugherImgView.fitHeightProperty().bind(laugherButton.heightProperty().multiply(0.6));
@@ -443,7 +443,6 @@ public class GUI extends Application {
 	        	buildGameScreen();
 	        }
 	        switchToScreen(chooseRoleScreen, GameScreen);
-	        
 	    });
 	    
 	    laugherButton.setOnAction(e -> {
@@ -465,150 +464,138 @@ public class GUI extends Application {
 	    Label instructionsLabel = new Label("Instructions");
 	    
 	    Button monstersButton = new Button();
-	    Label monsterslbl = new Label("Monsters"); // Changed to Title Case to match mockup
+	    Label monsterslbl = new Label("Monsters"); 
 	    String monstersImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
 	    ImageView monstersImgView = new ImageView(new Image(monstersImgUrl));
 	    monstersImgView.setPreserveRatio(true);
 	    VBox whiteMonsters = new VBox(monsterslbl, monstersImgView);
 	    
 	    Button cardsButton = new Button();
-	    Label cardslbl = new Label("Cards"); // Changed to Title Case to match mockup
+	    Label cardslbl = new Label("Cards"); 
 	    String cardsImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
 	    ImageView cardsImgView = new ImageView(new Image(cardsImgUrl));
 	    cardsImgView.setPreserveRatio(true);
 	    VBox whiteCards = new VBox(cardslbl, cardsImgView);
 	    
 	    Button cellsButton = new Button();
-	    Label cellslbl = new Label("Cells"); // Changed to Title Case
+	    Label cellslbl = new Label("Cells"); 
 	    String cellsImgUrl = getClass().getResource("laugherMonster2.jpg").toExternalForm();
 	    ImageView cellsImgView = new ImageView(new Image(cellsImgUrl));
 	    cellsImgView.setPreserveRatio(true);
 	    VBox whiteCells = new VBox(cellslbl, cellsImgView);
 	    
 	    Button gameRulesButton = new Button();
-	    Label gameRuleslbl = new Label("Rules"); // Changed to Title Case to match mockup
+	    Label gameRuleslbl = new Label("Rules"); 
 	    String gameRulesImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
 	    ImageView gameRulesImgView = new ImageView(new Image(gameRulesImgUrl));
 	    gameRulesImgView.setPreserveRatio(true);
 	    VBox whitegameRules = new VBox(gameRuleslbl, gameRulesImgView);
 	    
-	    
-	    
 	    HBox widgetsLayout = new HBox(monstersButton, cardsButton, cellsButton, gameRulesButton);
 	    InstructionsScreen = new VBox(instructionsLabel, widgetsLayout);
 	    
-	    // Outer Button Styling (Thick Borders)
+	    // Outer Button Styling
 	    monstersButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    cardsButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    cellsButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    gameRulesButton.styleProperty().bind(
 	            Bindings.concat("-fx-background-color: #1c113c; ",
-	            		"-fx-padding: ", InstructionsScreen.widthProperty().divide(150).asString(), "px; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px; ",
-	                    "-fx-border-radius: ", InstructionsScreen.heightProperty().divide(100).asString(), "px;"));
+	            		"-fx-padding: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", // EDITED: heightProperty
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px; ", 
+	                    "-fx-border-radius: ", mainScene.heightProperty().divide(100).asString("%.0f"), "px;")); 
 	    
 	    // Inner White Box Styling
 	    whiteMonsters.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    whiteCells.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    whiteCards.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
 	    whitegameRules.styleProperty().bind(
 	            Bindings.concat(
 	            		"-fx-padding: 0;",
 	            		"-fx-background-color: #f4f1ec; ",
-	                    "-fx-background-radius: ", InstructionsScreen.heightProperty().divide(50).asString(), "px; ",
+	                    "-fx-background-radius: ", mainScene.heightProperty().divide(50).asString("%.0f"), "px; ", 
 	                    "-fx-alignment: center;"));
 	    
-	    // Text Styling (Colors adjusted to match mockup 2)
+	    // Text Styling 
 	    monsterslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding: 0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #6a1eb5;")); 
 	    
 	    cellslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #1faaae;")); 
 	    
 	    cardslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding: 0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #6a1eb5;")); // Purple
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #6a1eb5;")); 
 	    
 	    gameRuleslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(20).asString(), "px;",
-	                    " -fx-text-fill: #1faaae;")); // Teal/Cyan to match the mockup
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
+	                    " -fx-text-fill: #1faaae;")); 
 	    
 	    instructionsLabel.styleProperty().bind(
 	            Bindings.concat("-fx-font-family: 'Lilita One';",
-	                    " -fx-font-size: ", InstructionsScreen.widthProperty().divide(18).asString(), "px;",
+	                    " -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;", // EDITED: heightProperty
 	                    " -fx-text-fill: #1c113c;"));
 	    
 	    // Layout & Sizing
-	    InstructionsScreen.spacingProperty().bind(InstructionsScreen.widthProperty().multiply(0.05));
-	    widgetsLayout.spacingProperty().bind(InstructionsScreen.widthProperty().multiply(0.05));
-	    whiteMonsters.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
-	    whiteCards.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
-	    whiteCells.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
-	    whitegameRules.spacingProperty().bind(InstructionsScreen.heightProperty().multiply(0.55).multiply(0.07));
+	    InstructionsScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05)); // EDITED: heightProperty
+	    widgetsLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.05)); // EDITED: heightProperty
+	    whiteMonsters.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); 
+	    whiteCards.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); 
+	    whiteCells.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); 
+	    whitegameRules.spacingProperty().bind(mainScene.heightProperty().multiply(0.55).multiply(0.07)); 
 	    
-	    monstersButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
-	    monstersButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
-	    cardsButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
-	    cardsButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
-	    cellsButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
-	    cellsButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
-	    gameRulesButton.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4));
-	    gameRulesButton.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15));
-	    
-	    // Bind Heights
-	    whiteMonsters.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
-	    whiteCards.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
-	    whiteCells.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
-	    whitegameRules.prefHeightProperty().bind(InstructionsScreen.heightProperty().multiply(0.4).multiply(0.9));
+	    // EDITED: Used bindDynamicSize helper. Using 0.25 as width multiplier so all 4 fit on screen based on height!
+	    bindDynamicSize(monstersButton, mainScene.heightProperty().multiply(0.28), mainScene.heightProperty().multiply(0.4));
+	    bindDynamicSize(cardsButton, mainScene.heightProperty().multiply(0.28), mainScene.heightProperty().multiply(0.4));
+	    bindDynamicSize(cellsButton, mainScene.heightProperty().multiply(0.28), mainScene.heightProperty().multiply(0.4));
+	    bindDynamicSize(gameRulesButton, mainScene.heightProperty().multiply(0.28), mainScene.heightProperty().multiply(0.4));
 
-	    // Bind Widths
-	    whiteMonsters.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
-	    whiteCards.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
-	    whiteCells.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
-	    whitegameRules.prefWidthProperty().bind(InstructionsScreen.widthProperty().multiply(0.15).multiply(0.9));
+	    bindDynamicSize(whiteMonsters, mainScene.heightProperty().multiply(0.28).multiply(0.9), mainScene.heightProperty().multiply(0.4).multiply(0.9));
+	    bindDynamicSize(whiteCards, mainScene.heightProperty().multiply(0.28).multiply(0.9), mainScene.heightProperty().multiply(0.4).multiply(0.9));
+	    bindDynamicSize(whiteCells, mainScene.heightProperty().multiply(0.28).multiply(0.9), mainScene.heightProperty().multiply(0.4).multiply(0.9));
+	    bindDynamicSize(whitegameRules, mainScene.heightProperty().multiply(0.28).multiply(0.9), mainScene.heightProperty().multiply(0.4).multiply(0.9));
 	    
 	    monstersImgView.fitHeightProperty().bind(monstersButton.heightProperty().multiply(0.5));
 	    cardsImgView.fitHeightProperty().bind(cardsButton.heightProperty().multiply(0.5));
@@ -625,7 +612,7 @@ public class GUI extends Application {
 	    monstersButton.setGraphic(whiteMonsters);
 	    cardsButton.setGraphic(whiteCards);
 	    cellsButton.setGraphic(whiteCells);
-	    gameRulesButton.setGraphic(whitegameRules);
+	    gameRulesButton.setGraphic(whitegameRules); 
 	    
 	    monstersButton.setContentDisplay(ContentDisplay.CENTER);
 	    cardsButton.setContentDisplay(ContentDisplay.CENTER);
@@ -638,37 +625,34 @@ public class GUI extends Application {
 	    addHoverEffect(gameRulesButton);
 	    // Actions
 	    monstersButton.setOnAction(e -> {
-	        GameControl.setChoosen_role(Role.SCARER);
-	        if (GameScreen == null) {
-	        	buildGameScreen();
+	        
+	        if (monstersScreen == null) {
+	        	buildMonstersScreen();
 	        }
-	        switchToScreen(InstructionsScreen, GameScreen);
+	        switchToScreen(InstructionsScreen, monstersScreen);
 	        
 	    });
 	    
 	    cardsButton.setOnAction(e -> {
-	        GameControl.setChoosen_role(Role.LAUGHER);
-	        if (GameScreen == null) {
-	        	buildGameScreen();
+	    	if (cardsScreen == null) {
+	        	buildCardsScreen();
 	        }
-	        switchToScreen(InstructionsScreen, GameScreen);
+	        switchToScreen(InstructionsScreen, cardsScreen);
 	    });
 	    
 	    cellsButton.setOnAction(e -> {
-	        GameControl.setChoosen_role(Role.SCARER);
-	        if (GameScreen == null) {
-	        	buildGameScreen();
+	    	if (cellsScreen == null) {
+	        	buildCellsScreen();
 	        }
-	        switchToScreen(InstructionsScreen, GameScreen);
+	        switchToScreen(InstructionsScreen, cellsScreen);
 	        
 	    });
 	    
 	    gameRulesButton.setOnAction(e -> {
-	        GameControl.setChoosen_role(Role.LAUGHER);
-	        if (GameScreen == null) {
-	        	buildGameScreen();
+	    	if (gameRulesScreen == null) {
+	        	buildgameRulesScreen();
 	        }
-	        switchToScreen(InstructionsScreen, GameScreen);
+	        switchToScreen(InstructionsScreen, gameRulesScreen);
 	    });
 	    
 	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
@@ -676,6 +660,33 @@ public class GUI extends Application {
 	    InstructionsScreen.setStyle(cssBackground);
 	}
 	
+	public void buildMonstersScreen(){
+		monstersScreen=new HBox();
+		String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    monstersScreen.setStyle(cssBackground);
+	}
+	
+	public void buildCardsScreen(){
+		cardsScreen=new HBox();
+		String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    cardsScreen.setStyle(cssBackground);
+	}
+	
+	public void buildCellsScreen(){
+		cellsScreen=new HBox();
+		String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    cellsScreen.setStyle(cssBackground);
+	}
+
+	public void buildgameRulesScreen(){
+		gameRulesScreen=new HBox();
+		String imageUrl = getClass().getResource("white background.png").toExternalForm();
+	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+	    gameRulesScreen.setStyle(cssBackground);
+	}
 	public void buildGameScreen() {
 		GameControl.startGame();
 
@@ -743,8 +754,8 @@ public class GUI extends Application {
 				opponentc = new Circle();
 				playerc.setFill(Color.BLUE);
 				opponentc.setFill(Color.RED);
-				playerc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
-				opponentc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
+				playerc.radiusProperty().bind(mainScene.heightProperty().divide(60)); // EDITED: Used mainScene instead of BoardPane
+				opponentc.radiusProperty().bind(mainScene.heightProperty().divide(60)); // EDITED: Used mainScene instead of BoardPane
 				
 				for (int i = 0; i < 10; i++) {
 					for (int j = 0; j < 10; j++) {
@@ -752,11 +763,10 @@ public class GUI extends Application {
 						
 						// 1. NEW CELL INDEX BADGE (Clearer Index)
 						Label textLabel = new Label(String.valueOf(c));
-						textLabel.styleProperty().bind(Bindings.concat("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: ", BoardPane.heightProperty().divide(65).asString(), "px;"));
+						textLabel.styleProperty().bind(Bindings.concat("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: ", mainScene.heightProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 						StackPane badge = new StackPane(textLabel);
 						badge.setStyle("-fx-background-color: rgba(28, 17, 60, 0.7); -fx-background-radius: 5px;");
 						badge.setPadding(new javafx.geometry.Insets(2, 5, 2, 5));
-						// Prevent the badge from stretching across the cell
 						badge.setMaxWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
 						badge.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
 						StackPane.setAlignment(badge, Pos.TOP_LEFT);
@@ -767,13 +777,13 @@ public class GUI extends Application {
 						cellContent.setAlignment(Pos.CENTER);
 						
 						Label iconLabel = new Label();
-						iconLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", BoardPane.heightProperty().divide(30).asString(), "px;"));
+						iconLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.heightProperty().divide(30).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 						
 						Label detailLabel = new Label();
-						detailLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", BoardPane.heightProperty().divide(60).asString(), "px; -fx-text-fill: #1c113c; -fx-font-weight: bold;"));
+						detailLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.heightProperty().divide(60).asString("%.0f"), "px; -fx-text-fill: #1c113c; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
 						detailLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-						String bgColor = "#f2efea"; // Default Normal Cell color
+						String bgColor = "#f2efea"; 
 						
 						int monsterIndex = indexOf(Constants.MONSTER_CELL_INDICES, c);
 
@@ -787,13 +797,10 @@ public class GUI extends Application {
 							detailLabel.setText("BOO");
 							bgColor = "#ff8b94"; 
 						} else if (monsterIndex != -1) {
-							
-							// NEW: DYNAMIC STATIONED MONSTERS
 							String mName = "Unknown";
 							String mIcon = "👾";
 							bgColor = "#dcb0ff"; 
 							
-							// Safely grab the stationed monster for this specific cell
 							if (GameControl.getGame() != null && monsterIndex < GameControl.getGame().getBoard().getStationedMonsters().size()) {
 								Monster stationed = GameControl.getGame().getBoard().getStationedMonsters().get(monsterIndex);
 								mName = stationed.getName().equals("James P. Sullivan") ? "Sullivan" :
@@ -805,15 +812,12 @@ public class GUI extends Application {
 														stationed.getName().equals("Henry J. Waternoose") ? "Henry":
 															"Yeti";
 								
-								
-								
-								// Visual difference between Scarers and Laughers
 								if (stationed.getRole().toString().equals("SCARER")) {
-									mIcon = "👿"; // Aggressive Scarer Icon
-									bgColor = "#ff8b94"; // Red tint for Scarers
+									mIcon = "👿"; 
+									bgColor = "#ff8b94"; 
 								} else {
-									mIcon = "🤡"; // Friendly Laugher Icon
-									bgColor = "#4dd0e1"; // Yellow/Orange tint for Laughers
+									mIcon = "🤡"; 
+									bgColor = "#4dd0e1"; 
 								}
 							}
 							
@@ -833,7 +837,6 @@ public class GUI extends Application {
 							detailLabel.setText("Card");
 							bgColor = "#ffffba"; 
 						} else if (c % 2 != 0) {
-							// Doors
 							int doorEnergy = 10 + (c % 4) * 10; 
 							if ((c / 2) % 2 == 0) { 
 								iconLabel.setText("🚪👹");
@@ -855,10 +858,9 @@ public class GUI extends Application {
 						btn.styleProperty().bind(
 								Bindings.concat("-fx-background-color: ", bgColor, "; ",
 										"-fx-border-color: #1c113c; ",
-										"-fx-border-width: ", BoardPane.heightProperty().divide(400).asString(), "px; ",
-										"-fx-border-radius: ", BoardPane.heightProperty().divide(400).asString(), "px;"));
+										"-fx-border-width: ", mainScene.heightProperty().divide(400).asString("%.0f"), "px; ", // EDITED: mainScene + %.0f
+										"-fx-border-radius: ", mainScene.heightProperty().divide(400).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 
-						// NEW: Save the generated button to our global array using its specific cell index
 						boardButtons[c] = btn;
 
 						// 5. Grid progression logic (Zig-Zag)
@@ -893,12 +895,6 @@ public class GUI extends Application {
 		String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
 		GameScreen.setStyle(cssBackground);
 
-//		RightLayoutFrame.setStyle("-fx-background-color: blue;");
-//		upperlayout.setStyle("-fx-background-color: #ff0000;");
-//		playerLayout.setStyle("-fx-background-color: orange;");
-//		VSLayout.setStyle("-fx-background-color: blue;");
-//		opponentLayout.setStyle("-fx-background-color: green;");
-//		DownLayout.setStyle("-fx-background-color: black;");
 		cardsLayout.setStyle("-fx-background-color: yellow;");
 
 		RightLayoutFrame.getChildren().add(RightLayout);
@@ -918,38 +914,38 @@ public class GUI extends Application {
 		actionCenter.setAlignment(Pos.CENTER);
 		RightLayoutFrame.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-		BoardPane.prefWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		BoardPane.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		BoardPane.minWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		BoardPane.minHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		BoardPane.maxWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		BoardPane.maxHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.prefWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.minWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.minHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.maxWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.maxHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
 
-		RightLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		RightLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		RightLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		RightLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
 
-		upperlayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.7));
-		upperlayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		upperlayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.7)); // EDITED: Used mainScene
+		upperlayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
 
-		DownLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
-		DownLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
+		DownLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
+		DownLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
 		
-		cardsLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
-		cardsLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.88)));
+		cardsLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
+		cardsLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.88))); // EDITED: Used mainScene
 		
-		actionCenter.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
-		actionCenter.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.12)));
+		actionCenter.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
+		actionCenter.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.12))); // EDITED: Used mainScene
 
-		playerLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		playerLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
+		playerLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		playerLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.4)); // EDITED: Used mainScene
 
-		VSLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		VSLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.2));
+		VSLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		VSLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.2)); // EDITED: Used mainScene
 
-		opponentLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
-		opponentLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
+		opponentLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		opponentLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.4)); // EDITED: Used mainScene
 
-		GameScreen.spacingProperty().bind(GameScreen.widthProperty().divide(125));
+		GameScreen.spacingProperty().bind(mainScene.widthProperty().divide(125)); // EDITED: Used mainScene
 
 		opponentTurnLabel.setVisible(false);
 		rollDiceLabel.setVisible(false);
@@ -961,44 +957,42 @@ public class GUI extends Application {
 				// ==========================================
 				
 				// --- PLAYER LAYOUT FONTS ---
-				// Divisors increased significantly to guarantee text fits (smaller fonts)
-				playerTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(50).asString(), "px; -fx-font-weight: bold;"));
-				youLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
-				playerMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
-				playerMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(65).asString(), "px;"));
-				playerMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
-				playerMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				playerStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(50).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				youLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				playerMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				playerMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				playerMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				playerStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 
 				// --- OPPONENT LAYOUT FONTS ---
-				opponentTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(50).asString(), "px; -fx-font-weight: bold;"));
-				opponentLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
-				opponentMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
-				opponentMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(65).asString(), "px;"));
-				opponentMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
-				opponentMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				opponentStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(50).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				opponentLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				opponentMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				opponentMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				opponentMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 
 				// --- DOWN LAYOUT FONTS (Cards & Action Center) ---
-				// Replaced 'white' with 'yellow' so it shows up on the black background without violating the rule
-				cardCounterLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(30).asString(), "px; -fx-font-weight: bold; -fx-font-family: 'Forte';"));
+				cardCounterLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(30).asString("%.0f"), "px; -fx-font-weight: bold; -fx-font-family: 'Forte';")); // EDITED: mainScene + %.0f
 				
-				usePowerup.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold; -fx-text-fill: black;"));
-				yesButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
-				noButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				usePowerup.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold; -fx-text-fill: black;")); // EDITED: mainScene + %.0f
+				yesButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				noButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
 				
-				rollDiceButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
-				rollDiceLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-text-fill: black; -fx-font-weight: bold;"));
+				rollDiceButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				rollDiceLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-text-fill: black; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
 				
 				
 		yesButton.setOnAction(e -> GameControl.handleUsePowerUpYES());
@@ -1006,6 +1000,17 @@ public class GUI extends Application {
 		rollDiceButton.setOnAction(e -> GameControl.handleRollDice());
 	}
 	
+	// EDITED: Added the strict size locking helper method
+	public void bindDynamicSize(javafx.scene.layout.Region node, javafx.beans.binding.DoubleBinding widthMath, javafx.beans.binding.DoubleBinding heightMath) {
+	    node.minWidthProperty().bind(widthMath);
+	    node.prefWidthProperty().bind(widthMath);
+	    node.maxWidthProperty().bind(widthMath);
+	    
+	    node.minHeightProperty().bind(heightMath);
+	    node.prefHeightProperty().bind(heightMath);
+	    node.maxHeightProperty().bind(heightMath);
+	}
+		
 	public static void updateTurnUI() {
 		Monster current = GameControl.getGame().getCurrent();
 		Monster player = GameControl.getGame().getPlayer();
