@@ -62,10 +62,10 @@ public class GUI extends Application {
 	public static VBox MainScreen;
 	private VBox chooseRoleScreen;
 	private VBox InstructionsScreen;
-	private HBox monstersScreen;
-	private HBox cardsScreen;
-	private HBox cellsScreen;
-	private HBox gameRulesScreen;
+	private VBox monstersScreen;
+	private VBox CardsScreen;
+	private VBox CellsScreen;
+	private VBox RulesScreen;
 	
 	private static MediaPlayer bgMusicPlayer;
 
@@ -358,7 +358,24 @@ public class GUI extends Application {
 	    VBox whiteLaugher = new VBox(laugherlbl, laugherImgView); 
 	    
 	    HBox scarerLaugherLayout = new HBox(scarerButton, laugherButton);
-	    chooseRoleScreen = new VBox(chooseRoleLabel, scarerLaugherLayout);
+	    
+	    // NEW: Home Button for Choose Role Screen
+	    Button homeBtn = new Button("🏠 HOME");
+	    homeBtn.styleProperty().bind(Bindings.concat(
+	            "-fx-background-color: #1c113c; -fx-text-fill: #1faaae; -fx-font-family: 'Lilita One';",
+	            "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;",
+	            "-fx-background-radius: 10px; -fx-cursor: hand;"));
+	    bindDynamicSize(homeBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+	    
+	    HBox topBar = new HBox(homeBtn);
+	    topBar.setAlignment(Pos.CENTER_LEFT);
+	    topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10)); // Slight padding from the edge
+	    
+	    homeBtn.setOnAction(e -> switchToScreen(chooseRoleScreen, MainScreen)); // Action to go back
+
+	    // EDITED: Added topBar to the VBox
+	    chooseRoleScreen = new VBox(topBar, chooseRoleLabel, scarerLaugherLayout);
+	    
 	    
 	    // Outer Button Styling
 	    scarerButton.styleProperty().bind(
@@ -465,14 +482,14 @@ public class GUI extends Application {
 	    
 	    Button monstersButton = new Button();
 	    Label monsterslbl = new Label("Monsters"); 
-	    String monstersImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    String monstersImgUrl = getClass().getResource("monstericon.png").toExternalForm();
 	    ImageView monstersImgView = new ImageView(new Image(monstersImgUrl));
 	    monstersImgView.setPreserveRatio(true);
 	    VBox whiteMonsters = new VBox(monsterslbl, monstersImgView);
 	    
 	    Button cardsButton = new Button();
 	    Label cardslbl = new Label("Cards"); 
-	    String cardsImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
+	    String cardsImgUrl = getClass().getResource("cardicon.png").toExternalForm();
 	    ImageView cardsImgView = new ImageView(new Image(cardsImgUrl));
 	    cardsImgView.setPreserveRatio(true);
 	    VBox whiteCards = new VBox(cardslbl, cardsImgView);
@@ -485,14 +502,35 @@ public class GUI extends Application {
 	    VBox whiteCells = new VBox(cellslbl, cellsImgView);
 	    
 	    Button gameRulesButton = new Button();
-	    Label gameRuleslbl = new Label("Rules"); 
-	    String gameRulesImgUrl = getClass().getResource("scarerMonster2.jpg").toExternalForm();
-	    ImageView gameRulesImgView = new ImageView(new Image(gameRulesImgUrl));
-	    gameRulesImgView.setPreserveRatio(true);
-	    VBox whitegameRules = new VBox(gameRuleslbl, gameRulesImgView);
+		Label gameRuleslbl = new Label("Rules"); 
+		
+		// NEW: Created a large "?" text label instead of an ImageView
+		Label gameRulesIcon = new Label("?");
+		gameRulesIcon.styleProperty().bind(Bindings.concat(
+				"-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", 
+				mainScene.heightProperty().divide(6).asString("%.0f"), "px;"));
+		
+		VBox whitegameRules = new VBox(gameRuleslbl, gameRulesIcon);
 	    
 	    HBox widgetsLayout = new HBox(monstersButton, cardsButton, cellsButton, gameRulesButton);
-	    InstructionsScreen = new VBox(instructionsLabel, widgetsLayout);
+	    
+	 // NEW: Home Button for Instructions Screen
+	    Button homeBtn = new Button("🏠 HOME");
+	    homeBtn.styleProperty().bind(Bindings.concat(
+	            "-fx-background-color: #1c113c; -fx-text-fill: #1faaae; -fx-font-family: 'Lilita One';",
+	            "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;",
+	            "-fx-background-radius: 10px; -fx-cursor: hand;"));
+	    bindDynamicSize(homeBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+	    
+	    HBox topBar = new HBox(homeBtn);
+	    topBar.setAlignment(Pos.CENTER_LEFT);
+	    topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10));
+	    
+	    homeBtn.setOnAction(e -> switchToScreen(InstructionsScreen, MainScreen)); // Action to go back
+
+	    // EDITED: Added topBar to the VBox
+	    InstructionsScreen = new VBox(topBar, instructionsLabel, widgetsLayout);
+	   
 	    
 	    // Outer Button Styling
 	    monstersButton.styleProperty().bind(
@@ -559,7 +597,7 @@ public class GUI extends Application {
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
 	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
-	                    " -fx-text-fill: #1faaae;")); 
+	                    " -fx-text-fill: #6a1eb5;")); 
 	    
 	    cardslbl.styleProperty().bind(
 	            Bindings.concat("-fx-padding: 0;",
@@ -571,7 +609,7 @@ public class GUI extends Application {
 	            Bindings.concat("-fx-padding:  0;",
 	                    "-fx-font-family: 'Lilita One';",
 	                    " -fx-font-size: ", mainScene.heightProperty().divide(22).asString("%.0f"), "px;", // EDITED: heightProperty
-	                    " -fx-text-fill: #1faaae;")); 
+	                    " -fx-text-fill: #6a1eb5;")); 
 	    
 	    instructionsLabel.styleProperty().bind(
 	            Bindings.concat("-fx-font-family: 'Lilita One';",
@@ -600,7 +638,7 @@ public class GUI extends Application {
 	    monstersImgView.fitHeightProperty().bind(monstersButton.heightProperty().multiply(0.5));
 	    cardsImgView.fitHeightProperty().bind(cardsButton.heightProperty().multiply(0.5));
 	    cellsImgView.fitHeightProperty().bind(cellsButton.heightProperty().multiply(0.5));
-	    gameRulesImgView.fitHeightProperty().bind(gameRulesButton.heightProperty().multiply(0.5));
+//	    gameRulesImgView.fitHeightProperty().bind(gameRulesButton.heightProperty().multiply(0.5));
 	    
 	    InstructionsScreen.setAlignment(Pos.CENTER);
 	    widgetsLayout.setAlignment(Pos.CENTER);
@@ -634,25 +672,25 @@ public class GUI extends Application {
 	    });
 	    
 	    cardsButton.setOnAction(e -> {
-	    	if (cardsScreen == null) {
+	    	if (CardsScreen == null) {
 	        	buildCardsScreen();
 	        }
-	        switchToScreen(InstructionsScreen, cardsScreen);
+	        switchToScreen(InstructionsScreen, CardsScreen);
 	    });
 	    
 	    cellsButton.setOnAction(e -> {
-	    	if (cellsScreen == null) {
+	    	if (CellsScreen == null) {
 	        	buildCellsScreen();
 	        }
-	        switchToScreen(InstructionsScreen, cellsScreen);
+	        switchToScreen(InstructionsScreen, CellsScreen);
 	        
 	    });
 	    
 	    gameRulesButton.setOnAction(e -> {
-	    	if (gameRulesScreen == null) {
-	        	buildgameRulesScreen();
+	    	if (RulesScreen == null) {
+	        	buildGameRulesScreen();
 	        }
-	        switchToScreen(InstructionsScreen, gameRulesScreen);
+	        switchToScreen(InstructionsScreen, RulesScreen);
 	    });
 	    
 	    String imageUrl = getClass().getResource("white background.png").toExternalForm();
@@ -660,32 +698,379 @@ public class GUI extends Application {
 	    InstructionsScreen.setStyle(cssBackground);
 	}
 	
-	public void buildMonstersScreen(){
-		monstersScreen=new HBox();
-		String imageUrl = getClass().getResource("white background.png").toExternalForm();
-	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
-	    monstersScreen.setStyle(cssBackground);
-	}
-	
-	public void buildCardsScreen(){
-		cardsScreen=new HBox();
-		String imageUrl = getClass().getResource("white background.png").toExternalForm();
-	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
-	    cardsScreen.setStyle(cssBackground);
-	}
-	
-	public void buildCellsScreen(){
-		cellsScreen=new HBox();
-		String imageUrl = getClass().getResource("white background.png").toExternalForm();
-	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
-	    cellsScreen.setStyle(cssBackground);
+	public void buildMonstersScreen() {
+		// 1. Data Extracted from Game PDF
+		String[] names = {"James P. Sullivan", "Mike Wazowski", "Randall Boggs", "Celia Mae", "Roz", "Fungus", "Henry J. Waternoose", "Yeti"};
+		String[] roles = {"SCARER (Dynamo)", "LAUGHER (Dasher)", "SCARER (Schemer)", "LAUGHER (MultiTasker)", "SCARER (MultiTasker)", "LAUGHER (Dasher)", "SCARER (Schemer)", "LAUGHER (Dynamo)"};
+		
+		// EDITED: Simplified the Start Energy text
+		String[] energies = {"Start Energy: 300", "Start Energy: 100", "Start Energy: 20", "Start Energy: 50", "Start Energy: 100", "Start Energy: 50", "Start Energy: 70", "Start Energy: 100"};
+		
+		// NEW: Extracted and Summarized Passive Traits from the PDF
+		String[] passives = {
+				"⚡ Passive: 2x multiplier on all energy gains and losses.", 
+				"⚡ Passive: Lightning Movement (Moves at 2x speed).", 
+				"⚡ Passive: +10 bonus to all energy gains and reduced losses.", 
+				"⚡ Passive: Moves at half speed, but gets +200 bonus to all energy changes.", 
+				"⚡ Passive: Moves at half speed, but gets +200 bonus to all energy changes.", 
+				"⚡ Passive: Lightning Movement (Moves at 2x speed).", 
+				"⚡ Passive: +10 bonus to all energy gains and reduced losses.", 
+				"⚡ Passive: 2x multiplier on all energy gains and losses."
+		};
+		
+		// NEW: Extracted and Summarized Active Powerups from the PDF
+		String[] actives = {
+				"🔥 Active (Energy Freeze): Skips the opponent's next turn.", 
+				"🔥 Active (Momentum Rush): Moves at 3x speed for 3 turns.", 
+				"🔥 Active (Chain Attack): Steals 10 energy from all players on board.", 
+				"🔥 Active (Focus Mode): Moves at normal speed for the next 2 turns.", 
+				"🔥 Active (Focus Mode): Moves at normal speed for the next 2 turns.", 
+				"🔥 Active (Momentum Rush): Moves at 3x speed for 3 turns.", 
+				"🔥 Active (Chain Attack): Steals 10 energy from all players on board.", 
+				"🔥 Active (Energy Freeze): Skips the opponent's next turn."
+		};
+		
+		String[] descs = {"\"The top scarer-powerful and confident.\"", "\"Fast and funny-the comedy speedster.\"", "\"Sneaky and cunning-always has an angle.\"", "\"Organized receptionist-handles everything.\"", "\"Always watching-nothing escapes her notice.\"", "\"Timid assistant-quick but nervous.\"", "\"Witty and strategic CEO.\"", "\"Banished snow monster-surprisingly cheerful.\""};
+		String[] images = {"james-removebg-preview.png", "mike-removebg-preview.png", "purp-removebg-preview.png", "celia-removebg-preview.png", "grump-removebg-preview.png", "3eyed-removebg-preview.png", "boss-removebg-preview.png", "yeti-removebg-preview.png"};
+		
+		int[] currentIndex = {0}; 
+
+		// 2. UI Elements Setup
+		Label titleLbl = new Label("MONSTERS ARCHIVE");
+		
+		Label nameLbl = new Label(names[0]);
+		Label roleLbl = new Label(roles[0]);
+		Label energyLbl = new Label(energies[0]);
+		
+		// NEW: Added the Passive and Active UI Labels
+		Label passiveLbl = new Label(passives[0]);
+		passiveLbl.setWrapText(true);
+		Label activeLbl = new Label(actives[0]);
+		activeLbl.setWrapText(true);
+		
+		Label descLbl = new Label(descs[0]);
+		descLbl.setWrapText(true);
+		
+		// EDITED: Added the new passive and active labels to the VBox layout
+		VBox textLayout = new VBox(nameLbl, roleLbl, energyLbl, passiveLbl, activeLbl, descLbl);
+		textLayout.setAlignment(Pos.CENTER_LEFT);
+		textLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.015)); // Custom spacing to fit the new text
+		
+		// Right Side: Image
+		ImageView monsterImgView = new ImageView(new Image(getClass().getResource(images[0]).toExternalForm()));
+		monsterImgView.setPreserveRatio(true);
+		VBox imgLayout = new VBox(monsterImgView);
+		imgLayout.setAlignment(Pos.CENTER);
+		
+		HBox contentLayout = new HBox(textLayout, imgLayout);
+		contentLayout.setAlignment(Pos.CENTER);
+		
+		// 3. Navigation Buttons
+		Button backBtn = new Button("⬅ BACK");
+		Button nextBtn = new Button("NEXT ➡");
+		
+		HBox topBar = new HBox(backBtn);
+		topBar.setAlignment(Pos.CENTER_LEFT);
+		topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10));
+		
+		HBox bottomBar = new HBox(nextBtn);
+		bottomBar.setAlignment(Pos.CENTER_RIGHT);
+		bottomBar.setPadding(new javafx.geometry.Insets(0, 30, 20, 0));
+
+		monstersScreen = new VBox(topBar, titleLbl, contentLayout, bottomBar); 
+		
+		// 4. Styling & Dynamic Resizing
+		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover;";
+		monstersScreen.setStyle(bgStyle);
+		monstersScreen.setAlignment(Pos.TOP_CENTER);
+		monstersScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+		
+		contentLayout.styleProperty().bind(Bindings.concat("-fx-background-color: #f4f1ec; -fx-border-color: #1c113c; -fx-border-width: 5px; -fx-background-radius: 20px; -fx-border-radius: 15px;"));
+		bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(1.2), mainScene.heightProperty().multiply(0.6));
+		contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.1));
+		
+		bindDynamicSize(textLayout, mainScene.heightProperty().multiply(0.65), mainScene.heightProperty().multiply(0.55)); // Slightly wider for the new text
+		bindDynamicSize(imgLayout, mainScene.heightProperty().multiply(0.4), mainScene.heightProperty().multiply(0.5));
+		monsterImgView.fitHeightProperty().bind(imgLayout.heightProperty().multiply(0.9));
+
+		// Font bindings 
+		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(12).asString("%.0f"), "px;"));
+		nameLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5; -fx-font-size: ", mainScene.heightProperty().divide(16).asString("%.0f"), "px;"));
+		roleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1faaae; -fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		energyLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(32).asString("%.0f"), "px;"));
+		
+		// NEW: Styling for the Passive and Active Labels
+		passiveLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #ff8b94; -fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		activeLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #ff8b94; -fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		
+		// EDITED: Slightly smaller and italicized the personality quote to distinguish it
+		descLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-font-style: italic; -fx-text-fill: #888888; -fx-font-size: ", mainScene.heightProperty().divide(40).asString("%.0f"), "px;"));
+		
+		String btnStyle = "-fx-background-color: #1c113c; -fx-text-fill: white; -fx-font-family: 'Lilita One'; -fx-background-radius: 10px; -fx-cursor: hand;";
+		backBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		nextBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		bindDynamicSize(backBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+		bindDynamicSize(nextBtn, mainScene.heightProperty().multiply(0.25), mainScene.heightProperty().multiply(0.08));
+
+		// 5. Actions 
+		nextBtn.setOnAction(e -> {
+			currentIndex[0] = (currentIndex[0] + 1) % names.length; 
+			nameLbl.setText(names[currentIndex[0]]);
+			roleLbl.setText(roles[currentIndex[0]]);
+			energyLbl.setText(energies[currentIndex[0]]);
+			
+			// NEW: Update Passive and Active text on button click
+			passiveLbl.setText(passives[currentIndex[0]]);
+			activeLbl.setText(actives[currentIndex[0]]);
+			
+			descLbl.setText(descs[currentIndex[0]]);
+			monsterImgView.setImage(new Image(getClass().getResource(images[currentIndex[0]]).toExternalForm()));
+		});
+		
+		backBtn.setOnAction(e -> switchToScreen(monstersScreen, InstructionsScreen));
 	}
 
-	public void buildgameRulesScreen(){
-		gameRulesScreen=new HBox();
-		String imageUrl = getClass().getResource("white background.png").toExternalForm();
-	    String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
-	    gameRulesScreen.setStyle(cssBackground);
+	public void buildCardsScreen() {
+		// 1. Data Extracted from Game PDF
+		String[] names = {"Swapper Card", "Energy Steal Card", "Start Over Card", "Shield Card", "Confusion Card"};
+		String[] counts = {"Quantity: 4 in deck", "Quantity: 6 in deck", "Quantity: 5 in deck", "Quantity: 5 in deck", "Quantity: 5 in deck"};
+		String[] descs = {
+				"Swaps place with the opponent if you are currently behind them on the board.", 
+				"Steals energy from opponent (Small Snatcher: 50, Sneaky Thief: 100, Mega Drain: 150).", 
+				"Can be lucky or not! Contamination Code sends YOU to the start, 2319 Alert sends OPPONENT to start.", 
+				"Activates shield protection. Blocks the next negative energy loss effect for your entire team!", 
+				"Swaps the roles (Scarer/Laugher) of both players for 2 to 3 turns! Chaos ensues."
+		};
+		// Placeholder images for cards - replace with actual card png names if you have them!
+		String[] images = {"celia-removebg-preview.png", "grump-removebg-preview.png", "scarerMonster2.jpg", "boss-removebg-preview.png", "yeti-removebg-preview.png"}; 
+		
+		int[] currentIndex = {0};
+
+		// 2. UI Elements Setup
+		Label titleLbl = new Label("CARDS ARCHIVE");
+		
+		Label nameLbl = new Label(names[0]);
+		Label countLbl = new Label(counts[0]);
+		Label descLbl = new Label(descs[0]);
+		descLbl.setWrapText(true);
+		
+		VBox textLayout = new VBox(nameLbl, countLbl, descLbl);
+		textLayout.setAlignment(Pos.CENTER_LEFT);
+		textLayout.setSpacing(20);
+		
+		ImageView imgView = new ImageView(new Image(getClass().getResource(images[0]).toExternalForm()));
+		imgView.setPreserveRatio(true);
+		VBox imgLayout = new VBox(imgView);
+		imgLayout.setAlignment(Pos.CENTER);
+		
+		HBox contentLayout = new HBox(textLayout, imgLayout);
+		contentLayout.setAlignment(Pos.CENTER);
+		
+		// 3. Navigation Buttons
+		Button backBtn = new Button("⬅ BACK");
+		Button nextBtn = new Button("NEXT ➡");
+		
+		HBox topBar = new HBox(backBtn);
+		topBar.setAlignment(Pos.CENTER_LEFT);
+		topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10));
+		
+		HBox bottomBar = new HBox(nextBtn);
+		bottomBar.setAlignment(Pos.CENTER_RIGHT);
+		bottomBar.setPadding(new javafx.geometry.Insets(0, 30, 20, 0));
+
+		CardsScreen = new VBox(topBar, titleLbl, contentLayout, bottomBar); 
+		
+		// 4. Styling & Dynamic Resizing
+		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover;";
+		CardsScreen.setStyle(bgStyle);
+		CardsScreen.setAlignment(Pos.TOP_CENTER);
+		CardsScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+		
+		contentLayout.styleProperty().bind(Bindings.concat("-fx-background-color: #f4f1ec; -fx-border-color: #1c113c; -fx-border-width: 5px; -fx-background-radius: 20px; -fx-border-radius: 15px;"));
+		bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(1.2), mainScene.heightProperty().multiply(0.6));
+		contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.1));
+		
+		bindDynamicSize(textLayout, mainScene.heightProperty().multiply(0.55), mainScene.heightProperty().multiply(0.5));
+		bindDynamicSize(imgLayout, mainScene.heightProperty().multiply(0.5), mainScene.heightProperty().multiply(0.5));
+		imgView.fitHeightProperty().bind(imgLayout.heightProperty().multiply(0.9));
+
+		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(12).asString("%.0f"), "px;"));
+		nameLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5; -fx-font-size: ", mainScene.heightProperty().divide(16).asString("%.0f"), "px;"));
+		countLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1faaae; -fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		descLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(30).asString("%.0f"), "px;"));
+		
+		String btnStyle = "-fx-background-color: #1c113c; -fx-text-fill: white; -fx-font-family: 'Lilita One'; -fx-background-radius: 10px; -fx-cursor: hand;";
+		backBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		nextBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		bindDynamicSize(backBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+		bindDynamicSize(nextBtn, mainScene.heightProperty().multiply(0.25), mainScene.heightProperty().multiply(0.08));
+
+		// 5. Actions (The Carousel Logic)
+		nextBtn.setOnAction(e -> {
+			currentIndex[0] = (currentIndex[0] + 1) % names.length; 
+			nameLbl.setText(names[currentIndex[0]]);
+			countLbl.setText(counts[currentIndex[0]]);
+			descLbl.setText(descs[currentIndex[0]]);
+			imgView.setImage(new Image(getClass().getResource(images[currentIndex[0]]).toExternalForm()));
+		});
+		
+		backBtn.setOnAction(e -> switchToScreen(CardsScreen, InstructionsScreen));
+	}
+
+	public void buildCellsScreen() {
+		// 1. Data Extracted from Game PDF
+		String[] names = {"Door Cell", "Monster Cell", "Conveyor Belt", "Contamination\nSock", "Card Cell", "Normal Cell"};
+		String[] descs = {
+				"Collects Energy! Match your role to gain energy for your whole team. Mismatch costs you energy unless shielded. Exhausted after 1 use.", 
+				"Contains a sidelined monster. Match role = free powerup! Mismatch = swaps energy with them if they have more.", 
+				"Automated transport system! Landing here instantly transports you safely forward.", 
+				"DANGER! CDA emergency protocols activated! Transports you backwards and drains 100 energy.", 
+				"Mysterious cell. Draw a random card from the pile and face its consequences!", 
+				"A regular corridor. You are safe here. Nothing happens."
+		};
+		// Placeholders for cells
+		String[] images = { "purp-removebg-preview.png", "celia-removebg-preview.png", "grump-removebg-preview.png", "scarerMonster2.jpg", "boss-removebg-preview.png", "yeti-removebg-preview.png"};
+		
+		int[] currentIndex = {0};
+
+		// 2. UI Elements Setup
+		Label titleLbl = new Label("THE FLOOR CELLS");
+		
+		Label nameLbl = new Label(names[0]);
+		Label descLbl = new Label(descs[0]);
+		descLbl.setWrapText(true);
+		
+		VBox textLayout = new VBox(nameLbl, descLbl);
+		textLayout.setAlignment(Pos.CENTER_LEFT);
+		textLayout.setSpacing(20);
+		
+		ImageView imgView = new ImageView(new Image(getClass().getResource(images[0]).toExternalForm()));
+		imgView.setPreserveRatio(true);
+		VBox imgLayout = new VBox(imgView);
+		imgLayout.setAlignment(Pos.CENTER);
+		
+		HBox contentLayout = new HBox(textLayout, imgLayout);
+		contentLayout.setAlignment(Pos.CENTER);
+		
+		// 3. Navigation Buttons
+		Button backBtn = new Button("⬅ BACK");
+		Button nextBtn = new Button("NEXT ➡");
+		
+		HBox topBar = new HBox(backBtn);
+		topBar.setAlignment(Pos.CENTER_LEFT);
+		topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10));
+		
+		HBox bottomBar = new HBox(nextBtn);
+		bottomBar.setAlignment(Pos.CENTER_RIGHT);
+		bottomBar.setPadding(new javafx.geometry.Insets(0, 30, 20, 0));
+
+		CellsScreen = new VBox(topBar, titleLbl, contentLayout, bottomBar); 
+		
+		// 4. Styling & Dynamic Resizing
+		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover;";
+		CellsScreen.setStyle(bgStyle);
+		CellsScreen.setAlignment(Pos.TOP_CENTER);
+		CellsScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+		
+		contentLayout.styleProperty().bind(Bindings.concat("-fx-background-color: #f4f1ec; -fx-border-color: #1c113c; -fx-border-width: 5px; -fx-background-radius: 20px; -fx-border-radius: 15px;"));
+		bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(1.2), mainScene.heightProperty().multiply(0.6));
+		contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.1));
+		
+		bindDynamicSize(textLayout, mainScene.heightProperty().multiply(0.55), mainScene.heightProperty().multiply(0.5));
+		bindDynamicSize(imgLayout, mainScene.heightProperty().multiply(0.5), mainScene.heightProperty().multiply(0.5));
+		imgView.fitHeightProperty().bind(imgLayout.heightProperty().multiply(0.9));
+
+		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(12).asString("%.0f"), "px;"));
+		nameLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1faaae; -fx-font-size: ", mainScene.heightProperty().divide(14).asString("%.0f"), "px;"));
+		descLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		String btnStyle = "-fx-background-color: #1c113c; -fx-text-fill: white; -fx-font-family: 'Lilita One'; -fx-background-radius: 10px; -fx-cursor: hand;";
+		backBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		nextBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		bindDynamicSize(backBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+		bindDynamicSize(nextBtn, mainScene.heightProperty().multiply(0.25), mainScene.heightProperty().multiply(0.08));
+
+		// 5. Actions
+		nextBtn.setOnAction(e -> {
+			currentIndex[0] = (currentIndex[0] + 1) % names.length; 
+			nameLbl.setText(names[currentIndex[0]]);
+			descLbl.setText(descs[currentIndex[0]]);
+			imgView.setImage(new Image(getClass().getResource(images[currentIndex[0]]).toExternalForm()));
+		});
+		
+		backBtn.setOnAction(e -> switchToScreen(CellsScreen, InstructionsScreen));
+	}
+
+	public void buildGameRulesScreen() {
+		Label titleLbl = new Label("HOW TO PLAY");
+		
+		// 1. Text Extracted from Rules PDF
+		Label rule1 = new Label("1. Goal: Reach Boo's Door (Cell 99) with at least 1000 Energy!");
+		Label rule2 = new Label("2. Sequence: Powerup Phase (cost 500) -> Roll Dice -> ");
+		Label rule2c = new Label("     Move -> Trigger Cell Effect"); // Added indent
+		Label rule3 = new Label("3. Grid: 10x10 Zig-Zag floor." );
+		Label rule3c = new Label("     Move past cell 99 and you wrap around to the start."); // Added indent
+		Label rule4 = new Label("4. Combat: If you land exactly on the opponent," );
+		Label rule4c = new Label("     the move is invalid and you must re-roll." ); // Added indent
+		Label rule5 = new Label("5. Team Play: Door energy affects your entire role team." );
+		Label rule5c = new Label("     Strategy is key!" ); // Added indent
+		
+		// EDITED: Group each rule and its continuation into its own VBox with zero spacing!
+		VBox box1 = new VBox(rule1);
+		VBox box2 = new VBox(rule2, rule2c);
+		VBox box3 = new VBox(rule3, rule3c);
+		VBox box4 = new VBox(rule4, rule4c);
+		VBox box5 = new VBox(rule5, rule5c);
+		
+		// Add the grouped boxes to the main layout
+		VBox textLayout = new VBox(box1, box2, box3, box4, box5);
+		textLayout.setAlignment(Pos.CENTER_LEFT);
+		
+		// 3. Navigation Buttons
+		Button backBtn = new Button("⬅ BACK");
+		HBox topBar = new HBox(backBtn);
+		topBar.setAlignment(Pos.CENTER_LEFT);
+		topBar.setPadding(new javafx.geometry.Insets(10, 0, 0, 10));
+		
+		RulesScreen = new VBox(topBar, titleLbl, textLayout); 
+		
+		// 4. Styling & Dynamic Resizing
+		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover;";
+		RulesScreen.setStyle(bgStyle);
+		RulesScreen.setAlignment(Pos.TOP_CENTER);
+		RulesScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+		
+		textLayout.styleProperty().bind(Bindings.concat("-fx-background-color: #f4f1ec; -fx-border-color: #1c113c; -fx-border-width: 5px; -fx-background-radius: 20px; -fx-border-radius: 15px; -fx-padding: 30px;"));
+		bindDynamicSize(textLayout, mainScene.heightProperty().multiply(1.2), mainScene.heightProperty().multiply(0.75));
+		textLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.04)); // Spacing between the rule blocks
+
+		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(12).asString("%.0f"), "px;"));
+		
+		// Style all rule labels
+		String ruleStyle = "-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5;";
+		
+		// Bind original labels
+		rule1.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule2.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule3.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule4.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule5.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		// EDITED: Bind the new 'c' labels so they match the rest of the text!
+		rule2c.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule3c.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule4c.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		rule5c.styleProperty().bind(Bindings.concat(ruleStyle, "-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+		
+		String btnStyle = "-fx-background-color: #1c113c; -fx-text-fill: white; -fx-font-family: 'Lilita One'; -fx-background-radius: 10px; -fx-cursor: hand;";
+		backBtn.styleProperty().bind(Bindings.concat(btnStyle, "-fx-font-size: ", mainScene.heightProperty().divide(35).asString("%.0f"), "px;"));
+		bindDynamicSize(backBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
+
+		// 5. Actions
+		backBtn.setOnAction(e -> switchToScreen(RulesScreen, InstructionsScreen));
 	}
 	public void buildGameScreen() {
 		GameControl.startGame();
