@@ -852,7 +852,7 @@ public class GUI extends Application {
 				"Swaps the roles (Scarer/Laugher) of both players for 2 to 3 turns! Chaos ensues."
 		};
 		// Placeholder images for cards - replace with actual card png names if you have them!
-		String[] images = {"swapper.png", "energysteal.png", "startover.png", "shiels.png", "confusion.png",}; 
+		String[] images = {"swapper2.png", "energysteal2.png", "startover2.png", "shield2.png", "confusion2.png",}; 
 		
 		int[] currentIndex = {0};
 
@@ -1179,8 +1179,8 @@ public class GUI extends Application {
 				opponentc = new Circle();
 				playerc.setFill(Color.BLUE);
 				opponentc.setFill(Color.RED);
-				playerc.radiusProperty().bind(mainScene.heightProperty().divide(60)); // EDITED: Used mainScene instead of BoardPane
-				opponentc.radiusProperty().bind(mainScene.heightProperty().divide(60)); // EDITED: Used mainScene instead of BoardPane
+				playerc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
+				opponentc.radiusProperty().bind(BoardPane.heightProperty().divide(60));
 				
 				for (int i = 0; i < 10; i++) {
 					for (int j = 0; j < 10; j++) {
@@ -1188,10 +1188,11 @@ public class GUI extends Application {
 						
 						// 1. NEW CELL INDEX BADGE (Clearer Index)
 						Label textLabel = new Label(String.valueOf(c));
-						textLabel.styleProperty().bind(Bindings.concat("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: ", mainScene.heightProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+						textLabel.styleProperty().bind(Bindings.concat("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: ", BoardPane.heightProperty().divide(65).asString(), "px;"));
 						StackPane badge = new StackPane(textLabel);
 						badge.setStyle("-fx-background-color: rgba(28, 17, 60, 0.7); -fx-background-radius: 5px;");
 						badge.setPadding(new javafx.geometry.Insets(2, 5, 2, 5));
+						// Prevent the badge from stretching across the cell
 						badge.setMaxWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
 						badge.setMaxHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
 						StackPane.setAlignment(badge, Pos.TOP_LEFT);
@@ -1202,13 +1203,13 @@ public class GUI extends Application {
 						cellContent.setAlignment(Pos.CENTER);
 						
 						Label iconLabel = new Label();
-						iconLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.heightProperty().divide(30).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+						iconLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", BoardPane.heightProperty().divide(30).asString(), "px;"));
 						
 						Label detailLabel = new Label();
-						detailLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.heightProperty().divide(60).asString("%.0f"), "px; -fx-text-fill: #1c113c; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+						detailLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", BoardPane.heightProperty().divide(60).asString(), "px; -fx-text-fill: #1c113c; -fx-font-weight: bold;"));
 						detailLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-						String bgColor = "#f2efea"; 
+						String bgColor = "#f2efea"; // Default Normal Cell color
 						
 						int monsterIndex = indexOf(Constants.MONSTER_CELL_INDICES, c);
 
@@ -1222,10 +1223,13 @@ public class GUI extends Application {
 							detailLabel.setText("BOO");
 							bgColor = "#ff8b94"; 
 						} else if (monsterIndex != -1) {
+							
+							// NEW: DYNAMIC STATIONED MONSTERS
 							String mName = "Unknown";
 							String mIcon = "👾";
 							bgColor = "#dcb0ff"; 
 							
+							// Safely grab the stationed monster for this specific cell
 							if (GameControl.getGame() != null && monsterIndex < GameControl.getGame().getBoard().getStationedMonsters().size()) {
 								Monster stationed = GameControl.getGame().getBoard().getStationedMonsters().get(monsterIndex);
 								mName = stationed.getName().equals("James P. Sullivan") ? "Sullivan" :
@@ -1237,12 +1241,15 @@ public class GUI extends Application {
 														stationed.getName().equals("Henry J. Waternoose") ? "Henry":
 															"Yeti";
 								
+								
+								
+								// Visual difference between Scarers and Laughers
 								if (stationed.getRole().toString().equals("SCARER")) {
-									mIcon = "👿"; 
-									bgColor = "#ff8b94"; 
+									mIcon = "👿"; // Aggressive Scarer Icon
+									bgColor = "#ff8b94"; // Red tint for Scarers
 								} else {
-									mIcon = "🤡"; 
-									bgColor = "#4dd0e1"; 
+									mIcon = "🤡"; // Friendly Laugher Icon
+									bgColor = "#4dd0e1"; // Yellow/Orange tint for Laughers
 								}
 							}
 							
@@ -1262,6 +1269,7 @@ public class GUI extends Application {
 							detailLabel.setText("Card");
 							bgColor = "#ffffba"; 
 						} else if (c % 2 != 0) {
+							// Doors
 							int doorEnergy = 10 + (c % 4) * 10; 
 							if ((c / 2) % 2 == 0) { 
 								iconLabel.setText("🚪👹");
@@ -1283,9 +1291,10 @@ public class GUI extends Application {
 						btn.styleProperty().bind(
 								Bindings.concat("-fx-background-color: ", bgColor, "; ",
 										"-fx-border-color: #1c113c; ",
-										"-fx-border-width: ", mainScene.heightProperty().divide(400).asString("%.0f"), "px; ", // EDITED: mainScene + %.0f
-										"-fx-border-radius: ", mainScene.heightProperty().divide(400).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+										"-fx-border-width: ", BoardPane.heightProperty().divide(400).asString(), "px; ",
+										"-fx-border-radius: ", BoardPane.heightProperty().divide(400).asString(), "px;"));
 
+						// NEW: Save the generated button to our global array using its specific cell index
 						boardButtons[c] = btn;
 
 						// 5. Grid progression logic (Zig-Zag)
@@ -1320,6 +1329,12 @@ public class GUI extends Application {
 		String cssBackground = "-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
 		GameScreen.setStyle(cssBackground);
 
+//		RightLayoutFrame.setStyle("-fx-background-color: blue;");
+//		upperlayout.setStyle("-fx-background-color: #ff0000;");
+//		playerLayout.setStyle("-fx-background-color: orange;");
+//		VSLayout.setStyle("-fx-background-color: blue;");
+//		opponentLayout.setStyle("-fx-background-color: green;");
+//		DownLayout.setStyle("-fx-background-color: black;");
 		cardsLayout.setStyle("-fx-background-color: yellow;");
 
 		RightLayoutFrame.getChildren().add(RightLayout);
@@ -1339,38 +1354,38 @@ public class GUI extends Application {
 		actionCenter.setAlignment(Pos.CENTER);
 		RightLayoutFrame.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-		BoardPane.prefWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		BoardPane.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		BoardPane.minWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		BoardPane.minHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		BoardPane.maxWidthProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		BoardPane.maxHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
+		BoardPane.prefWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.minWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.minHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.maxWidthProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		BoardPane.maxHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
 
-		RightLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		RightLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
+		RightLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		RightLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
 
-		upperlayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.7)); // EDITED: Used mainScene
-		upperlayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
+		upperlayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.7));
+		upperlayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
 
-		DownLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
-		DownLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95))); // EDITED: Used mainScene
+		DownLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
+		DownLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)));
 		
-		cardsLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
-		cardsLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.88))); // EDITED: Used mainScene
+		cardsLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
+		cardsLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.88)));
 		
-		actionCenter.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.2)); // EDITED: Used mainScene
-		actionCenter.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.12))); // EDITED: Used mainScene
+		actionCenter.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.2));
+		actionCenter.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.12)));
 
-		playerLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		playerLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.4)); // EDITED: Used mainScene
+		playerLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		playerLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
 
-		VSLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		VSLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.2)); // EDITED: Used mainScene
+		VSLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		VSLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.2));
 
-		opponentLayout.prefHeightProperty().bind(mainScene.heightProperty().multiply(0.9)); // EDITED: Used mainScene
-		opponentLayout.prefWidthProperty().bind(mainScene.widthProperty().subtract(mainScene.heightProperty().multiply(0.95)).multiply(0.4)); // EDITED: Used mainScene
+		opponentLayout.prefHeightProperty().bind(GameScreen.heightProperty().multiply(0.9));
+		opponentLayout.prefWidthProperty().bind(GameScreen.widthProperty().subtract(GameScreen.heightProperty().multiply(0.95)).multiply(0.4));
 
-		GameScreen.spacingProperty().bind(mainScene.widthProperty().divide(125)); // EDITED: Used mainScene
+		GameScreen.spacingProperty().bind(GameScreen.widthProperty().divide(125));
 
 		opponentTurnLabel.setVisible(false);
 		rollDiceLabel.setVisible(false);
@@ -1382,42 +1397,44 @@ public class GUI extends Application {
 				// ==========================================
 				
 				// --- PLAYER LAYOUT FONTS ---
-				playerTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(50).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				youLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				playerMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				playerMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				playerMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				playerStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				// Divisors increased significantly to guarantee text fits (smaller fonts)
+				playerTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(50).asString(), "px; -fx-font-weight: bold;"));
+				youLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
+				playerMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
+				playerMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(65).asString(), "px;"));
+				playerMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
+				playerMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				playerStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
 
 				// --- OPPONENT LAYOUT FONTS ---
-				opponentTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(50).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				opponentLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				opponentMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				opponentMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(65).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				opponentMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				opponentStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				opponentTurnLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(50).asString(), "px; -fx-font-weight: bold;"));
+				opponentLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
+				opponentMonsterNameLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
+				opponentMonsterOriginalRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentMonsterCurrentRoleLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentMonsterTypeLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(65).asString(), "px;"));
+				opponentMonsterEnergyLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold;"));
+				opponentMonsterPositionLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentMonsterShieldedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentMonsterFrozenLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentMonsterConfusedLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				opponentStatus.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
 
 				// --- DOWN LAYOUT FONTS (Cards & Action Center) ---
-				cardCounterLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(30).asString("%.0f"), "px; -fx-font-weight: bold; -fx-font-family: 'Forte';")); // EDITED: mainScene + %.0f
+				// Replaced 'white' with 'yellow' so it shows up on the black background without violating the rule
+				cardCounterLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(30).asString(), "px; -fx-font-weight: bold; -fx-font-family: 'Forte';"));
 				
-				usePowerup.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-font-weight: bold; -fx-text-fill: black;")); // EDITED: mainScene + %.0f
-				yesButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
-				noButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(70).asString("%.0f"), "px;")); // EDITED: mainScene + %.0f
+				usePowerup.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-font-weight: bold; -fx-text-fill: black;"));
+				yesButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
+				noButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(70).asString(), "px;"));
 				
-				rollDiceButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(55).asString("%.0f"), "px; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
-				rollDiceLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", mainScene.widthProperty().divide(60).asString("%.0f"), "px; -fx-text-fill: black; -fx-font-weight: bold;")); // EDITED: mainScene + %.0f
+				rollDiceButton.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(55).asString(), "px; -fx-font-weight: bold;"));
+				rollDiceLabel.styleProperty().bind(Bindings.concat("-fx-font-size: ", GameScreen.widthProperty().divide(60).asString(), "px; -fx-text-fill: black; -fx-font-weight: bold;"));
 				
 				
 		yesButton.setOnAction(e -> GameControl.handleUsePowerUpYES());
