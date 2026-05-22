@@ -195,7 +195,7 @@ public class GUI extends Application {
 		// 4. Set up the Scene Transitions
 		// What happens when the video finishes normally
 		mediaPlayer.setOnEndOfMedia(() -> {
-			buildMainScreen();
+			buildMainScreen(primaryStage);
 			switchToScreen(introScreen, MainScreen); // Swap to the actual game menu
 			startBackgroundMusic();
 		});
@@ -203,7 +203,7 @@ public class GUI extends Application {
 		// What happens if they click Skip
 		skipButton.setOnAction(e -> {
 			mediaPlayer.stop(); // Stop the audio/video immediately
-			buildMainScreen();
+			buildMainScreen(primaryStage);
 			switchToScreen(introScreen, MainScreen);
 			startBackgroundMusic();
 		});
@@ -213,7 +213,7 @@ public class GUI extends Application {
 	}
 	
 
-	public void buildMainScreen() {
+	public void buildMainScreen(Stage primaryStage) {
 	    javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
 	    
 	    Label welcomeLabel = new Label("WELCOME");
@@ -1499,64 +1499,70 @@ public class GUI extends Application {
 	}
 	
 	// NEW: Builds and displays the game over screen
-	public void buildGameOverScreen(String winnerName) {
-		javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
-		
-		Label titleLbl = new Label("GAME OVER");
-		Label winnerLbl = new Label(winnerName + " WINS!");
-		winnerLbl.setWrapText(true);
-		winnerLbl.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-		
-		ImageView winnerImgView = new ImageView(new Image(getClass().getResource("PLAYMonster.png").toExternalForm()));
-		winnerImgView.setPreserveRatio(true);
-		
-		VBox contentLayout = new VBox(winnerLbl, winnerImgView);
-		contentLayout.setAlignment(Pos.CENTER);
-		
-		Button returnMenuBtn = new Button("RETURN TO MAIN MENU");
-		
-		GameOverScreen = new VBox(titleLbl, contentLayout, returnMenuBtn); 
-		
-		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
-		GameOverScreen.setStyle(bgStyle);
-		GameOverScreen.setAlignment(Pos.CENTER);
-		GameOverScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.08));
-		
-		contentLayout.styleProperty().bind(Bindings.concat(
-				"-fx-background-color: #f4f1ec; ", 
-				"-fx-border-color: #1c113c; ",     
-				"-fx-border-width: 5px; ",
-				"-fx-background-radius: 20px; ",
-				"-fx-border-radius: 15px;"
-		));
-		
-		bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(0.8), mainScene.heightProperty().multiply(0.6));
-		contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
-		
-		winnerImgView.fitHeightProperty().bind(contentLayout.heightProperty().multiply(0.55));
-		
-		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;"));
-		winnerLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5; -fx-font-size: ", mainScene.heightProperty().divide(14).asString("%.0f"), "px;"));
-		
-		returnMenuBtn.styleProperty().bind(Bindings.concat(
-				"-fx-background-color: #1c113c; -fx-text-fill: #1faaae; -fx-font-family: 'Lilita One';",
-				"-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;",
-				"-fx-background-radius: 10px; -fx-cursor: hand;"
-		));
-		bindDynamicSize(returnMenuBtn, mainScene.heightProperty().multiply(0.5), mainScene.heightProperty().multiply(0.1));
+	public void buildGameOverScreen(String winnerName, String winnerRole, int playerEnergy, int opponentEnergy) {
+	    // 1. UI Elements
+	    Label titleLbl = new Label("GAME OVER");
+	    Label winnerLbl = new Label(winnerName + " WINS!");
+	    Label roleLbl = new Label("Role: " + winnerRole);
+	    
+	    roleLbl.styleProperty().bind(Bindings.concat(
+	    	    "-fx-font-family: 'Lilita One'; ", 
+	    	    "-fx-text-fill: #1faaae; ", // Using your teal color
+	    	    "-fx-font-size: ", mainScene.heightProperty().divide(20).asString("%.0f"), "px;"
+	    	));
+	    // REQUIREMENT: Final energy of both monsters must be displayed
+	    Label energyLbl = new Label("FINAL ENERGY\n" + 
+	                                "Player: " + playerEnergy + " | Opponent: " + opponentEnergy);
+	    energyLbl.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+	    
+	    ImageView winnerImgView = new ImageView(new Image(getClass().getResource("PLAYMonster.png").toExternalForm()));
+	    winnerImgView.setPreserveRatio(true);
+	    
+	    VBox contentLayout = new VBox(winnerLbl, roleLbl, energyLbl, winnerImgView);
+	    contentLayout.setAlignment(Pos.CENTER);
+	    
+	    Button returnMenuBtn = new Button("RETURN TO MAIN MENU");
+	    
+	    GameOverScreen = new VBox(titleLbl, contentLayout, returnMenuBtn); 
+	    
+	    // 2. Styling (Using active mainScene height)
+	    String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover;";
+	    GameOverScreen.setStyle(bgStyle);
+	    GameOverScreen.setAlignment(Pos.CENTER);
+	    GameOverScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+	    
+	    contentLayout.styleProperty().bind(Bindings.concat(
+	            "-fx-background-color: #f4f1ec; -fx-border-color: #1c113c; -fx-border-width: 5px; ",
+	            "-fx-background-radius: 20px; -fx-border-radius: 15px;"
+	    ));
+	    
+	    bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(0.7), mainScene.heightProperty().multiply(0.7));
+	    contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.03));
+	    winnerImgView.fitHeightProperty().bind(contentLayout.heightProperty().multiply(0.3));
+	    
+	    // Text Styling
+	    titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;"));
+	    winnerLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5; -fx-font-size: ", mainScene.heightProperty().divide(16).asString("%.0f"), "px;"));
+	    energyLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;"));
+	    
+	    returnMenuBtn.styleProperty().bind(Bindings.concat(
+	            "-fx-background-color: #1c113c; -fx-text-fill: #1faaae; -fx-font-family: 'Lilita One';",
+	            "-fx-font-size: ", mainScene.heightProperty().divide(30).asString("%.0f"), "px;",
+	            "-fx-background-radius: 10px; -fx-cursor: hand;"
+	    ));
+	    bindDynamicSize(returnMenuBtn, mainScene.heightProperty().multiply(0.4), mainScene.heightProperty().multiply(0.08));
 
-		// The "Hard Reset" to fix the Ghost Overlay
-		returnMenuBtn.setOnAction(e -> {
-			MainScreen = null;
-			chooseRoleScreen = null;
-			GameScreen = null; 
-			
-			Stage stage = (Stage) mainScene.getWindow(); 
-			buildMainScreen(); 
-			mainScene.setRoot(MainScreen);
-		});
+	    // 3. Action: Return to main menu
+	    returnMenuBtn.setOnAction(e -> {
+	        MainScreen = null;
+	        chooseRoleScreen = null;
+	        GameScreen = null; 
+	        GameOverScreen = null;
+	        
+	        buildMainScreen((Stage) mainScene.getWindow()); 
+	        mainScene.setRoot(MainScreen);
+	    });
 	}
-	
 	
 	
 	

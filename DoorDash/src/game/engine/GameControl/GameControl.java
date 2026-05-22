@@ -59,18 +59,18 @@ public class GameControl {
 	
 	// NEW: The core Loop manager - called at the very end of everything happening in a turn
 	// NEW: The core Loop manager - called at the very end of everything happening in a turn
-		public static void endOfTurn() {
-	        Monster winner = game.getWinner();
-	        if (winner != null) {
-	            // EDITED: Build the new screen using the winner's actual name
-	            GUI.buildGameOverScreen(winner.getName());
-	            
-	            // EDITED: Switch from the GameScreen to the newly built GameOverScreen
-	            GUI.switchToScreen(GUI.GameScreen, GUI.GameOverScreen);
-	        } else {
-	            GUI.updateTurnUI();
-	        }
+	public static void endOfTurn() {
+	    Monster winner = game.getWinner();
+	    if (winner != null) {
+	        Monster p = game.getPlayer();
+	        Monster o = game.getOpponent();
+	        // Passing name, role, and final energy values
+	        GUI.instance.buildGameOverScreen(winner.getName(), winner.getRole().toString(), p.getEnergy(), o.getEnergy());
+	        GUI.instance.switchToScreen(GUI.instance.GameScreen, GUI.instance.GameOverScreen);
+	    } else {
+	        GUI.updateTurnUI();
 	    }
+	}
 
 	public static TranslateTransition handleMoveMonsterOnBoardHelperX(int stepsToMove, Circle cir) {
 		TranslateTransition transition = new TranslateTransition();
