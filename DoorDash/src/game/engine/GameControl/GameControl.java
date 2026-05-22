@@ -58,14 +58,19 @@ public class GameControl {
 	}
 	
 	// NEW: The core Loop manager - called at the very end of everything happening in a turn
-	public static void endOfTurn() {
-        Monster winner = game.getWinner();
-        if (winner != null) {
-            GUI.showGameOverScreen(winner);
-        } else {
-            GUI.updateTurnUI();
-        }
-    }
+	// NEW: The core Loop manager - called at the very end of everything happening in a turn
+		public static void endOfTurn() {
+	        Monster winner = game.getWinner();
+	        if (winner != null) {
+	            // EDITED: Build the new screen using the winner's actual name
+	            GUI.buildGameOverScreen(winner.getName());
+	            
+	            // EDITED: Switch from the GameScreen to the newly built GameOverScreen
+	            GUI.switchToScreen(GUI.GameScreen, GUI.GameOverScreen);
+	        } else {
+	            GUI.updateTurnUI();
+	        }
+	    }
 
 	public static TranslateTransition handleMoveMonsterOnBoardHelperX(int stepsToMove, Circle cir) {
 		TranslateTransition transition = new TranslateTransition();

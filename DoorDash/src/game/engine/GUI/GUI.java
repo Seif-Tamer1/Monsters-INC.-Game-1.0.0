@@ -46,7 +46,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class GUI extends Application {
-
+	public static GUI instance;
 	static Stage alertStage;
 	
 	// MADE PUBLIC STATIC SO WE CAN SWITCH TO GAME OVER OR BACK TO START
@@ -56,11 +56,11 @@ public class GUI extends Application {
 	
 	
 	
-	private static HBox GameScreen;
-	private VBox GameOverScreen;
+	public HBox GameScreen;
+	public  VBox GameOverScreen;
 	private StackPane introScreen;
-	public static VBox MainScreen;
-	private VBox chooseRoleScreen;
+	public  VBox MainScreen;
+	private  VBox chooseRoleScreen;
 	private VBox InstructionsScreen;
 	private VBox monstersScreen;
 	private VBox CardsScreen;
@@ -132,7 +132,7 @@ public class GUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
+		instance = this;
 		primaryStage.setTitle("Monsters INC.");
 		
 		
@@ -195,7 +195,7 @@ public class GUI extends Application {
 		// 4. Set up the Scene Transitions
 		// What happens when the video finishes normally
 		mediaPlayer.setOnEndOfMedia(() -> {
-			buildMainScreen(primaryStage);
+			buildMainScreen();
 			switchToScreen(introScreen, MainScreen); // Swap to the actual game menu
 			startBackgroundMusic();
 		});
@@ -203,7 +203,7 @@ public class GUI extends Application {
 		// What happens if they click Skip
 		skipButton.setOnAction(e -> {
 			mediaPlayer.stop(); // Stop the audio/video immediately
-			buildMainScreen(primaryStage);
+			buildMainScreen();
 			switchToScreen(introScreen, MainScreen);
 			startBackgroundMusic();
 		});
@@ -213,7 +213,7 @@ public class GUI extends Application {
 	}
 	
 
-	public void buildMainScreen(Stage primaryStage) {
+	public void buildMainScreen() {
 	    javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
 	    
 	    Label welcomeLabel = new Label("WELCOME");
@@ -983,7 +983,7 @@ public class GUI extends Application {
 		
 		// 3. Navigation Buttons
 		Button backBtn = new Button("⬅ BACK");
-		Button nextBtn = new Button("NEXT CELL ➡");
+		Button nextBtn = new Button("NEXT ➡");
 		
 		HBox topBar = new HBox(backBtn);
 		topBar.setAlignment(Pos.CENTER_LEFT);
@@ -1426,7 +1426,7 @@ public class GUI extends Application {
 	}
 	
 	// EDITED: Added the strict size locking helper method
-	public void bindDynamicSize(javafx.scene.layout.Region node, javafx.beans.binding.DoubleBinding widthMath, javafx.beans.binding.DoubleBinding heightMath) {
+	public static void bindDynamicSize(javafx.scene.layout.Region node, javafx.beans.binding.DoubleBinding widthMath, javafx.beans.binding.DoubleBinding heightMath) {
 	    node.minWidthProperty().bind(widthMath);
 	    node.prefWidthProperty().bind(widthMath);
 	    node.maxWidthProperty().bind(widthMath);
@@ -1499,82 +1499,70 @@ public class GUI extends Application {
 	}
 	
 	// NEW: Builds and displays the game over screen
-	public static void showGameOverScreen(Monster winner) {
-        VBox gameOverLayout = new VBox(30);
-        gameOverLayout.setAlignment(Pos.CENTER);
-        gameOverLayout.setStyle("-fx-background-color: #1c113c;");
+	public void buildGameOverScreen(String winnerName) {
+		javafx.scene.text.Font.loadFont(getClass().getResourceAsStream("/fonts/LilitaOne-Regular.ttf"), 12);
+		
+		Label titleLbl = new Label("GAME OVER");
+		Label winnerLbl = new Label(winnerName + " WINS!");
+		winnerLbl.setWrapText(true);
+		winnerLbl.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+		
+		ImageView winnerImgView = new ImageView(new Image(getClass().getResource("PLAYMonster.png").toExternalForm()));
+		winnerImgView.setPreserveRatio(true);
+		
+		VBox contentLayout = new VBox(winnerLbl, winnerImgView);
+		contentLayout.setAlignment(Pos.CENTER);
+		
+		Button returnMenuBtn = new Button("RETURN TO MAIN MENU");
+		
+		GameOverScreen = new VBox(titleLbl, contentLayout, returnMenuBtn); 
+		
+		String bgStyle = "-fx-background-image: url('" + getClass().getResource("white background.png").toExternalForm() + "'); -fx-background-size: cover; -fx-background-position: center center; -fx-background-repeat: no-repeat;";
+		GameOverScreen.setStyle(bgStyle);
+		GameOverScreen.setAlignment(Pos.CENTER);
+		GameOverScreen.spacingProperty().bind(mainScene.heightProperty().multiply(0.08));
+		
+		contentLayout.styleProperty().bind(Bindings.concat(
+				"-fx-background-color: #f4f1ec; ", 
+				"-fx-border-color: #1c113c; ",     
+				"-fx-border-width: 5px; ",
+				"-fx-background-radius: 20px; ",
+				"-fx-border-radius: 15px;"
+		));
+		
+		bindDynamicSize(contentLayout, mainScene.heightProperty().multiply(0.8), mainScene.heightProperty().multiply(0.6));
+		contentLayout.spacingProperty().bind(mainScene.heightProperty().multiply(0.05));
+		
+		winnerImgView.fitHeightProperty().bind(contentLayout.heightProperty().multiply(0.55));
+		
+		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(10).asString("%.0f"), "px;"));
+		winnerLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #6a1eb5; -fx-font-size: ", mainScene.heightProperty().divide(14).asString("%.0f"), "px;"));
+		
+		returnMenuBtn.styleProperty().bind(Bindings.concat(
+				"-fx-background-color: #1c113c; -fx-text-fill: #1faaae; -fx-font-family: 'Lilita One';",
+				"-fx-font-size: ", mainScene.heightProperty().divide(25).asString("%.0f"), "px;",
+				"-fx-background-radius: 10px; -fx-cursor: hand;"
+		));
+		bindDynamicSize(returnMenuBtn, mainScene.heightProperty().multiply(0.5), mainScene.heightProperty().multiply(0.1));
 
-        Label gameOverLabel = new Label("GAME OVER");
-        gameOverLabel.setTextFill(Color.RED);
-        gameOverLabel.setFont(new Font("Forte", 60));
-
-        Label winnerLabel = new Label("WINNER: " + winner.getName() + " (" + winner.getRole() + ")");
-        winnerLabel.setTextFill(Color.GOLD);
-        winnerLabel.setFont(new Font("Forte", 40));
-
-        HBox energyBox = new HBox(50);
-        energyBox.setAlignment(Pos.CENTER);
-        
-        Label pEnergy = new Label(GameControl.getGame().getPlayer().getName() + " (You): " + GameControl.getGame().getPlayer().getEnergy() + " Energy");
-        pEnergy.setTextFill(Color.WHITE);
-        pEnergy.setFont(new Font("Arial", 20));
-
-        Label oEnergy = new Label(GameControl.getGame().getOpponent().getName() + " (Opp): " + GameControl.getGame().getOpponent().getEnergy() + " Energy");
-        oEnergy.setTextFill(Color.WHITE);
-        oEnergy.setFont(new Font("Arial", 20));
-        
-        energyBox.getChildren().addAll(pEnergy, oEnergy);
-
-        Button startButton = new Button("Return to Start Window");
-        startButton.setStyle("-fx-font-size: 20px; -fx-background-color: #f2efea; -fx-text-fill: #1c113c; -fx-font-weight: bold;");
-        startButton.setOnAction(e -> {
-            mainScene.setRoot(MainScreen);
-        });
-
-        gameOverLayout.getChildren().addAll(gameOverLabel, winnerLabel, energyBox, startButton);
-        mainScene.setRoot(gameOverLayout);
-    }
-	
-	public void openInstructionsWindow() {
-		Stage instructionsStage = new Stage();
-		instructionsStage.setTitle("Game Rules & Instructions");
-
-		VBox layout = new VBox(15);
-		layout.setAlignment(Pos.CENTER);
-		layout.setStyle("-fx-background-color: #f2efea; -fx-padding: 20px;");
-
-		Label title = new Label("How to Play DooR DasH");
-		title.setStyle("-fx-font-family: 'Forte'; -fx-font-size: 24px; -fx-text-fill: #1c113c;");
-
-		Label rules = new Label(
-			"OBJECTIVE:\n" +
-			"Be the first to reach Boo's Door (Cell 99) with at least 1000 Energy!\n\n" +
-			"TURN SEQUENCE:\n" +
-			"1. Powerup (Optional): Spend 500 energy to use your monster's special ability.\n" +
-			"2. Roll Dice: Move forward 1 to 6 steps.\n" +
-			"3. Cell Effects: Activate the cell you land on.\n\n" +
-			"CELL TYPES:\n" +
-			"- Door Cells: Gain energy if your role matches, lose it if it's a mismatch.\n" +
-			"- Monster Cells: Free powerup if role matches, otherwise energy might swap.\n" +
-			"- Conveyor Belts & Socks: Move up or down the board.\n" +
-			"- Card Cells: Draw a game-changing card!\n\n" +
-			"Remember: If you land on an occupied cell, the move is invalid and you must roll again!"
-		);
-		rules.setStyle("-fx-font-size: 14px; -fx-text-fill: #1c113c;");
-
-		Button closeBtn = new Button("Understood!");
-		closeBtn.setStyle("-fx-font-size: 16px; -fx-background-color: #1c113c; -fx-text-fill: white;");
-		closeBtn.setOnAction(e -> instructionsStage.close());
-
-		layout.getChildren().addAll(title, rules, closeBtn);
-
-		Scene scene = new Scene(layout, 500, 450);
-		instructionsStage.setScene(scene);
-		instructionsStage.show();
+		// The "Hard Reset" to fix the Ghost Overlay
+		returnMenuBtn.setOnAction(e -> {
+			MainScreen = null;
+			chooseRoleScreen = null;
+			GameScreen = null; 
+			
+			Stage stage = (Stage) mainScene.getWindow(); 
+			buildMainScreen(); 
+			mainScene.setRoot(MainScreen);
+		});
 	}
 	
+	
+	
+	
+	
 	// Helper 1: Smoothly fade to a new screen
-	private void switchToScreen(Parent oldRoot, Parent newRoot) {
+	public void switchToScreen(Parent oldRoot, Parent newRoot) {
 		
 		// 1. Create a Fade Out animation for the intro screen (takes 1 second)
 	    FadeTransition fadeOut = new FadeTransition(Duration.seconds(1.0), oldRoot);
