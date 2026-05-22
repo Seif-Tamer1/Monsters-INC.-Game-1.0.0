@@ -495,11 +495,19 @@ public class GUI extends Application {
 	    VBox whiteCards = new VBox(cardslbl, cardsImgView);
 	    
 	    Button cellsButton = new Button();
-	    Label cellslbl = new Label("Cells"); 
-	    String cellsImgUrl = getClass().getResource("laugherMonster2.jpg").toExternalForm();
-	    ImageView cellsImgView = new ImageView(new Image(cellsImgUrl));
-	    cellsImgView.setPreserveRatio(true);
-	    VBox whiteCells = new VBox(cellslbl, cellsImgView);
+		Label cellslbl = new Label("Cells"); 
+		
+		// NEW: Created a styled Region to look exactly like a game board cell
+		javafx.scene.layout.Region cellIcon = new javafx.scene.layout.Region();
+		cellIcon.styleProperty().bind(Bindings.concat(
+				"-fx-background-color: #dcb0ff; ", // A nice purple matching your palette
+				"-fx-border-color: #1c113c; ",     // Dark border
+				"-fx-border-width: 4px; ",
+				"-fx-background-radius: 12px; ",
+				"-fx-border-radius: 10px;"
+		));
+		
+		VBox whiteCells = new VBox(cellslbl, cellIcon);
 	    
 	    Button gameRulesButton = new Button();
 		Label gameRuleslbl = new Label("Rules"); 
@@ -637,7 +645,8 @@ public class GUI extends Application {
 	    
 	    monstersImgView.fitHeightProperty().bind(monstersButton.heightProperty().multiply(0.5));
 	    cardsImgView.fitHeightProperty().bind(cardsButton.heightProperty().multiply(0.5));
-	    cellsImgView.fitHeightProperty().bind(cellsButton.heightProperty().multiply(0.5));
+	 // Bind the cell icon to be a perfect square, taking up 40% of the button's height
+		bindDynamicSize(cellIcon, cellsButton.heightProperty().multiply(0.4), cellsButton.heightProperty().multiply(0.4));
 //	    gameRulesImgView.fitHeightProperty().bind(gameRulesButton.heightProperty().multiply(0.5));
 	    
 	    InstructionsScreen.setAlignment(Pos.CENTER);
@@ -843,7 +852,7 @@ public class GUI extends Application {
 				"Swaps the roles (Scarer/Laugher) of both players for 2 to 3 turns! Chaos ensues."
 		};
 		// Placeholder images for cards - replace with actual card png names if you have them!
-		String[] images = {"celia-removebg-preview.png", "grump-removebg-preview.png", "scarerMonster2.jpg", "boss-removebg-preview.png", "yeti-removebg-preview.png"}; 
+		String[] images = {"swapper.png", "energysteal.png", "startover.png", "shiels.png", "confusion.png",}; 
 		
 		int[] currentIndex = {0};
 
@@ -930,8 +939,9 @@ public class GUI extends Application {
 				"Mysterious cell. Draw a random card from the pile and face its consequences!", 
 				"A regular corridor. You are safe here. Nothing happens."
 		};
-		// Placeholders for cells
-		String[] images = { "purp-removebg-preview.png", "celia-removebg-preview.png", "grump-removebg-preview.png", "scarerMonster2.jpg", "boss-removebg-preview.png", "yeti-removebg-preview.png"};
+		
+		// EDITED: Exactly 5 images. The 6th item (Normal Cell) will use the rectangle instead!
+		String[] images = {"doorcell.png", "monstercell.png", "conveyorbelt.png", "contaminationsock.png", "cardcell.png"}; 
 		
 		int[] currentIndex = {0};
 
@@ -946,9 +956,26 @@ public class GUI extends Application {
 		textLayout.setAlignment(Pos.CENTER_LEFT);
 		textLayout.setSpacing(20);
 		
+		// Setup Image View for the first 5 cells
 		ImageView imgView = new ImageView(new Image(getClass().getResource(images[0]).toExternalForm()));
 		imgView.setPreserveRatio(true);
-		VBox imgLayout = new VBox(imgView);
+		
+		// Setup the styled Region for the Normal Cell
+		javafx.scene.layout.Region normalCellIcon = new javafx.scene.layout.Region();
+		normalCellIcon.styleProperty().bind(Bindings.concat(
+				"-fx-background-color: #f2efea; ", // Beige corridor color to match the board
+				"-fx-border-color: #1c113c; ",     // Dark border
+				"-fx-border-width: 8px; ",
+				"-fx-background-radius: 20px; ",
+				"-fx-border-radius: 15px;"
+		));
+		normalCellIcon.setVisible(false); // Hidden initially because we start on the Door Cell
+		
+		// StackPane to hold both the ImageView AND the Region on top of each other
+		StackPane iconPane = new StackPane(imgView, normalCellIcon);
+		iconPane.setAlignment(Pos.CENTER);
+		
+		VBox imgLayout = new VBox(iconPane); 
 		imgLayout.setAlignment(Pos.CENTER);
 		
 		HBox contentLayout = new HBox(textLayout, imgLayout);
@@ -956,7 +983,7 @@ public class GUI extends Application {
 		
 		// 3. Navigation Buttons
 		Button backBtn = new Button("⬅ BACK");
-		Button nextBtn = new Button("NEXT ➡");
+		Button nextBtn = new Button("NEXT CELL ➡");
 		
 		HBox topBar = new HBox(backBtn);
 		topBar.setAlignment(Pos.CENTER_LEFT);
@@ -980,7 +1007,11 @@ public class GUI extends Application {
 		
 		bindDynamicSize(textLayout, mainScene.heightProperty().multiply(0.55), mainScene.heightProperty().multiply(0.5));
 		bindDynamicSize(imgLayout, mainScene.heightProperty().multiply(0.5), mainScene.heightProperty().multiply(0.5));
+		
 		imgView.fitHeightProperty().bind(imgLayout.heightProperty().multiply(0.9));
+		
+		// Bind the Normal Cell rectangle to be a perfect square that scales with the layout
+		bindDynamicSize(normalCellIcon, imgLayout.heightProperty().multiply(0.7), imgLayout.heightProperty().multiply(0.7));
 
 		titleLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1c113c; -fx-font-size: ", mainScene.heightProperty().divide(12).asString("%.0f"), "px;"));
 		nameLbl.styleProperty().bind(Bindings.concat("-fx-font-family: 'Lilita One'; -fx-text-fill: #1faaae; -fx-font-size: ", mainScene.heightProperty().divide(14).asString("%.0f"), "px;"));
@@ -993,12 +1024,21 @@ public class GUI extends Application {
 		bindDynamicSize(backBtn, mainScene.heightProperty().multiply(0.2), mainScene.heightProperty().multiply(0.06));
 		bindDynamicSize(nextBtn, mainScene.heightProperty().multiply(0.25), mainScene.heightProperty().multiply(0.08));
 
-		// 5. Actions
+		// 5. Actions (The Visibility Toggle Logic)
 		nextBtn.setOnAction(e -> {
 			currentIndex[0] = (currentIndex[0] + 1) % names.length; 
 			nameLbl.setText(names[currentIndex[0]]);
 			descLbl.setText(descs[currentIndex[0]]);
-			imgView.setImage(new Image(getClass().getResource(images[currentIndex[0]]).toExternalForm()));
+			
+			// EDITED: Safely handles the switch. If it's "Normal Cell", show the rectangle and DO NOT touch the image array.
+			if (names[currentIndex[0]].toLowerCase().contains("normal")) {
+				imgView.setVisible(false);
+				normalCellIcon.setVisible(true); // Show the rectangle!
+			} else {
+				normalCellIcon.setVisible(false);
+				imgView.setVisible(true); // Show the image!
+				imgView.setImage(new Image(getClass().getResource(images[currentIndex[0]]).toExternalForm()));
+			}
 		});
 		
 		backBtn.setOnAction(e -> switchToScreen(CellsScreen, InstructionsScreen));
